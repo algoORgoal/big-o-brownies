@@ -6,23 +6,21 @@ const findGcd = (num1, num2) => {
     return num1;
 };
 
-const findArrayGcd = (arr) => arr.reduce(findGcd);
+const findArrayGcd = (args) => args.reduce((accumulator, num) => findGcd(accumulator, num));
 
 function solution(arrayA, arrayB) {
     const gcdA = findArrayGcd(arrayA);
     const gcdB = findArrayGcd(arrayB);
-
-    const canDivide = (array, gcd) => array.every((num) => num % gcd === 0);
-    const cannotDivide = (array, gcd) => array.every((num) => num % gcd !== 0);
-
-    let result = 0;
-
-    if (canDivide(arrayA, gcdA) && cannotDivide(arrayB, gcdA)) {
-        result = Math.max(result, gcdA);
+    const isGcdADividable = arrayB.some((element) => element % gcdA === 0);
+    const isGcdBDividable = arrayA.some((element) => element % gcdB === 0);
+    if (!isGcdADividable && !isGcdBDividable) {
+        return Math.max(gcdA, gcdB)
     }
-    if (canDivide(arrayB, gcdB) && cannotDivide(arrayA, gcdB)) {
-        result = Math.max(result, gcdB);
+    if (!isGcdADividable) {
+        return gcdA;
     }
-
-    return result;
+    if (!isGcdBDividable) {
+        return gcdB;
+    }
+    return 0;
 }
