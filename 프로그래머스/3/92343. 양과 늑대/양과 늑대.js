@@ -13,6 +13,7 @@ function solution(info, edges) {
     
     
     const stack = [ root ];
+    const visitBitMaps = new Set();
 
     let maxShipCount = 0;
     
@@ -36,11 +37,17 @@ function solution(info, edges) {
             }
             
             const newVisitBitMap = visitBitMap | (1 << i);
+            
+            if (visitBitMaps.has(newVisitBitMap)) {
+                continue;
+            }
+            
             stack.push({ 
                 visitBitMap: newVisitBitMap,
                 shipCount: info[i] === 0 ? shipCount + 1 : shipCount,
                 wolfCount: info[i] === 1 ? wolfCount + 1 : wolfCount,
-            });   
+            });
+            visitBitMaps.add(newVisitBitMap);
         }
     }
     
