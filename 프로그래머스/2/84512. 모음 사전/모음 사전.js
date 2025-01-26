@@ -13,9 +13,8 @@ function preorderTraverse(visited, str, depth = 0) {
     if (depth === 5) {
         return;
     }
-    preorderTraverse(visited, str + 'A', depth + 1);
-    preorderTraverse(visited, str + 'E', depth + 1);
-    preorderTraverse(visited, str + 'I', depth + 1);
-    preorderTraverse(visited, str + 'O', depth + 1);
-    preorderTraverse(visited, str + 'U', depth + 1);
+    
+    [ 'A', 'E', 'I', 'O', 'U' ].forEach((character) => {
+        preorderTraverse(visited, str + character, depth + 1);
+    });
 }
