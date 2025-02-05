@@ -15,7 +15,7 @@ function binarySearch(traverseArgs, upperbound) {
     let end = 10_000 * 10_000;
     while (start !== end) {
         const middle = Math.floor((start + end) / 2);
-        const [ _, cuts ] = postOrderTraverse2(...traverseArgs, middle);
+        const [ _, cuts ] = postOrderTraverse(...traverseArgs, middle);
         if (cuts > upperbound) {
             start = middle + 1;
         } else {
@@ -25,7 +25,7 @@ function binarySearch(traverseArgs, upperbound) {
     return start;
 }
 
-function postOrderTraverse2(graph, num, root, upperbound) {
+function postOrderTraverse(graph, num, root, upperbound) {
     
     const stack = [{ node: root, isVisited: false }];
     const computed = new Map();
