@@ -24,80 +24,53 @@ const getEmptyPositions = (matrix, set, position) => {
     return targetPositions;
 }
 
-const getBlockPositions = (matrix, set, position) => {
+const getBlockPositions = (matrix, set, position, target) => {
     const [ x, y ] = position;
     const nearbyPositions = [[ x - 1, y ], [ x + 1, y ], [ x, y - 1 ], [ x, y + 1 ]].filter((position) => checkReachable(matrix, position));
     const unvisitedNearbyPositions = nearbyPositions.filter((position) => !set.has(JSON.stringify(position)));
     unvisitedNearbyPositions.forEach((position) => set.add(JSON.stringify(position)));
-    const targetPositions = getTargetPositions(matrix, unvisitedNearbyPositions, 1);
+    const targetPositions = getTargetPositions(matrix, unvisitedNearbyPositions, target);
     return targetPositions;
 }
 
-function getEmptyBlocks(gameBoard) {
+function getBlocks(matrix, target) {
     const visited = new Set();
 
-    const emptyBlocks = [];
+    const blocks = [];
     
-    for (let i = 0; i < gameBoard.length; i++) {
-        for (let j = 0; j < gameBoard[0].length; j++) {
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[0].length; j++) {
             const root = [ i, j ];
             const positionJson = JSON.stringify(root);
             
-            if (visited.has(positionJson) || gameBoard[i][j] === 1) continue;
+            if (visited.has(positionJson) || matrix[i][j] !== target) continue;
             
             
             visited.add(positionJson) 
             const stack = [ root ];
-            const emptyBlock = [];
+            const block = [];
             while (stack.length) {
                 const [ x, y ] = stack.pop();
-                emptyBlock.push([ x, y ]);
-                const emptyPositions = getEmptyPositions(gameBoard, visited, [ x, y ]);
-                stack.push(...emptyPositions);
+                block.push([ x, y ]);
+                const positions = getBlockPositions(matrix, visited, [ x, y ], target);
+                stack.push(...positions);
             }
-            emptyBlocks.push(getRelativePositions(emptyBlock));
+            blocks.push(getRelativePositions(block));
         }
     }
     
-    return emptyBlocks;
+    return blocks;
     
 }
 
-function getPieces(table) {
-    const visited = new Set();
 
-    const pieces = [];
-
-    for (let i = 0; i < table.length; i++) {
-        for (let j = 0; j < table[0].length; j++) {
-            const root = [ i, j ];
-            const positionJson = JSON.stringify(root);
-            
-            if (visited.has(positionJson) || table[i][j] === 0) continue;
-            
-            
-            visited.add(positionJson) 
-            const stack = [ root ];
-            const piece = [];
-            while (stack.length) {
-                const [ x, y ] = stack.pop();
-                piece.push([ x, y ]);
-                const blockPositions = getBlockPositions(table, visited, [ x, y ]);
-                stack.push(...blockPositions);
-            }
-            pieces.push(getRelativePositions(piece));
-        }
-    }
-    
-    return pieces;
-}
 
 const rotatePosition = ([ x, y ]) => [ -y , x ];
 
 
 function solution(gameBoard, table) {
-    const emptyBlocks = getEmptyBlocks(gameBoard);
-    const pieces = getPieces(table);
+    const emptyBlocks = getBlocks(gameBoard, 0);
+    const pieces = getBlocks(table, 1);
     
     const sortedEmptyBlocks = emptyBlocks.map((emptyBlock) => emptyBlock.sort(([ x1, y1 ], [ x2, y2 ]) => x1 !== x2 ? x1 - x2 : y1 - y2));
     const sortedRotatedPieces = pieces.map((piece) => {
@@ -133,16 +106,5 @@ function solution(gameBoard, table) {
         }
     }
     return fittableCount;
-    
-    
-//     const fittablePositionCount = sortedEmptyBlocks.reduce((sum, emptyBlock) => {
-//         const canFitIn = sortedRotatedPieces.some((rotatedPiece) => emptyBlock.length === rotatedPiece.length && rotatedPiece.every((_, index) => rotatedPiece[index][0] === emptyBlock[index][0] && rotatedPiece[index][1] === emptyBlock[index][1] ));
-//         if (canFitIn) {
-//             return sum + emptyBlock.length;
-//         }
-//         return sum;
-//     }, 0);
-    
-//     return fittablePositionCount;
 }
         
