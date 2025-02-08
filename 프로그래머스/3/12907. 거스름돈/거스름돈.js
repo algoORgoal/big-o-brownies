@@ -45,3 +45,13 @@ function solution(n, money) {
 // 2
 // 2 1
 // 1 1 1
+
+
+
+// only considers these cases
+// 1. the number of ways to form j using only the first i - 1 coins
+// 2. the number of ways to form j using the first i coins
+// and it counts the number of ways to form j by
+// (the number of ways to form j - coin in non decreasing order) + coin because
+// 1. the order of addition while constructing j - coin is non-decreasing
+// 2. coin is bigger or equals to the last element?
