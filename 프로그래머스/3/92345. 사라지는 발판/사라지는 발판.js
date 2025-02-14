@@ -4,12 +4,7 @@
 
 const checkValidLoc = (board, [ x, y ]) => x >= 0 && x < board.length && y >= 0 && y < board[0].length;
 
-const getAroundLocs = ([ x, y ]) => [
-    [ x - 1, y ],
-    [ x + 1, y ],
-    [ x, y - 1],
-    [ x, y + 1]
-];
+const getAroundLocs = ([ x, y ]) => [[ x - 1, y ], [ x + 1, y ], [ x, y - 1], [ x, y + 1]];
 
 const getValidAroundLocs = (board, loc) => getAroundLocs(loc).filter((loc) => checkValidLoc(board, loc));
 
@@ -17,36 +12,39 @@ const getBitPos = (board, [ x, y ]) => x * board[0].length + y;
 
 const checkFootrest = (board, [ x, y ]) => board[x][y];
 
-const areLocsSame = (loc1, loc2) => loc1[0] === loc2[0] && loc1[1] === loc2[1];
-
 const Json = (value) => JSON.stringify(value);
 
 function solution(board, aloc, bloc) {
     
-    const root = {
+    
+    const rootState = {
         aloc,
         bloc,
         mask: 0,
-        turn: 'a',
+        turn: 'a'
+    };
+    const rootKey = Json(rootState);
+    
+    const root = {
+        ...rootState,
         visited: false,
-        stepCount: 0,
     }
     
-
     const stack = [ root ];
-    const visitedStates = new Set(Json(root));
+    
+    const visitedStates = new Set(rootKey);
     const computedStates = new Map();
     
     
     while (stack.length) {
-        const { aloc, bloc, mask, turn, visited } = stack.pop();
+        const { aloc, bloc, mask, turn, visited, stepCount, } = stack.pop();
         const state = { aloc, bloc, mask, turn };
         const key = Json(state);
-        const loc = turn === "a" ? aloc : bloc;
-        const moves = getValidAroundLocs(board, loc).filter((loc) => {
-            const bitPos = getBitPos(board, loc);
-            return ((1 << bitPos) & mask) === 0 && checkFootrest(board, loc);
-        });
+        const loc = turn === "a" ? aloc: bloc;
+        const moves = getValidAroundLocs(board, loc).filter((aroundLoc) => {
+            const bitPos = getBitPos(board, aroundLoc);
+            return ((1 << bitPos) & mask) === 0 && checkFootrest(board, aroundLoc);
+        })
         
         if (!visited) {
             stack.push({ 
@@ -67,35 +65,40 @@ function solution(board, aloc, bloc) {
                 }
                 const nextMask = (1 << getBitPos(board, loc)) | mask;
                 
-                
                 const nextState = {
                     aloc: nextAloc,
                     bloc: nextBloc,
                     mask: nextMask,
                     turn: nextTurn,
                 }
+                const nextKey = Json(nextState);
                 
                 const nextNode = {
                     ...nextState,
                     visited: false,
                 }
                 
-                const nextKey = Json(nextState);
-                
                 if (!visitedStates.has(nextKey)){
-                    visitedStates.add(nextKey);
                     stack.push(nextNode);
+                    visitedStates.add(nextKey);
                 }
+
             });
             
         }else {
-            if ((mask & (1 << getBitPos(board, loc))) !== 0) {
-                computedStates.set(key, { winner: turn === 'a' ? 'b' : 'a', stepCount: 0 });
+            if (((1 << getBitPos(board, loc)) & mask) !== 0) {
+                computedStates.set(key, {
+                    winner: turn === 'a' ? 'b' : 'a',
+                    stepCount: 0,
+                });
                 continue;
             }
             
-            if (!moves.length) {
-                computedStates.set(key, { winner: turn === 'a' ? 'b' : 'a', stepCount: 0 });
+            if (moves.length === 0) {
+                computedStates.set(key, {
+                    winner: turn === 'a' ? 'b' : 'a',
+                    stepCount: 0,
+                });
                 continue;
             }
             
@@ -109,35 +112,31 @@ function solution(board, aloc, bloc) {
                     nextAloc = aloc;
                     nextBloc = move;
                     nextTurn = 'a';
-                }        
-                const nextMask = (1 << getBitPos(board, loc)) | mask;
+                }
                 
+                const nextMask = (1 << getBitPos(board, loc)) | mask;
                 const nextKey = Json({
                     aloc: nextAloc,
                     bloc: nextBloc,
                     mask: nextMask,
                     turn: nextTurn,
-                })
-                
+                });
+            
                 return computedStates.get(nextKey); 
             });
             
             const winningOutcomes = outcomes.filter(({ winner }) => winner === turn);
             if (winningOutcomes.length) {
                 const best = Math.min(...winningOutcomes.map(({ stepCount }) => stepCount));
-                computedStates.set(Json(state), { winner: turn, stepCount: best + 1 });
+                computedStates.set(key, { winner: turn, stepCount: best + 1 });
             } else {
                 const worst = Math.max(...outcomes.map(({ stepCount }) => stepCount));
-                computedStates.set(Json(state), { winner: turn === 'a' ? 'b' : 'a', stepCount: worst + 1 });
+                computedStates.set(key, { winner: turn === 'a' ? 'b' : 'a', stepCount: worst + 1 });
             }
         }
         
     }
     
-    return computedStates.get(Json({
-        aloc,
-        bloc,
-        mask: 0,
-        turn: 'a'
-    })).stepCount;
+    const { stepCount } = computedStates.get(rootKey);
+    return stepCount;
 }
