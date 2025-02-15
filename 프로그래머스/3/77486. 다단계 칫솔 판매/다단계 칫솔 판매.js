@@ -7,26 +7,19 @@
 // 문제의 절산 방식이 제대로 정의되지 않았다.
 // 합산 절사인 경우: 자신의 판매량 수수료가 0.9이고, subtree에서 거둬들인 수수료가 0.9인 경우 => 합산하여 1.8에서 깎은 1원을 수수료로 내야 한다.
 // 개별 절사인 경우: 자신의 판며량 수수료가 0.9이고, subtree에서 거둬들인 수수료가 0.9인 경우 => 개별 절사하여 아무 수수료도 내지 않는다.
+
+const generateTable = (keys, values) => keys.reduce((accumulator, key, index) => {
+    const value = values[index];
+    if (!accumulator[key]) {
+        accumulator[key] = [];
+    }
+    accumulator[key].push(value);
+    return accumulator;
+}, {});
+
 function solution(enrolls, referrals, sellers, amounts) {
-    
-    const graph = referrals.reduce((accumulator, referral, index) => {
-        const enroll = enrolls[index];
-        if (!accumulator[referral]) {
-            accumulator[referral] = [];
-        }
-        accumulator[referral].push(enroll);
-        return accumulator;
-    }, {});
-    
-    const revenueTable = sellers.reduce((accumulator, seller, index) => {
-        if (!accumulator[seller]) {
-            accumulator[seller] = [];
-        }
-        const amount = amounts[index];
-        accumulator[seller].push(amount * 100);
-        return accumulator;
-    }, {});
-    
+    const graph = generateTable(referrals, enrolls);
+    const revenueTable = generateTable(sellers, amounts.map((amount) => amount * 100));
     const computedEarnings = new Map();
     
     const root = {
