@@ -70,8 +70,10 @@ function solution(rectangles, characterX, characterY, itemX, itemY) {
     
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j <= board[0].length; j++) {
+            if (board[i][j] === 0) continue;
             const positions = getValidAllAroundPositions(board, [ i, j ]);
-            if (board[i][j] === 1 && positions.some(([ x, y ]) => board[x][y] === 0)) {
+            // if (positions.every(([ x, y ]) => board[x][y] === 1)) continue;
+            if (positions.some(([ x, y ]) => board[x][y] === 0)) {
                 board[i][j] = 2;
             }
         }
@@ -91,7 +93,6 @@ function solution(rectangles, characterX, characterY, itemX, itemY) {
     while (!queue.isEmpty) {
         const { node, distance } = queue.dequeue();
         const [ x, y ] = node;
-        console.log(x, y);
         
         if (x === itemX * 2 && y === itemY * 2) {
             shortestDistance = Math.min(shortestDistance, distance);
