@@ -1,3 +1,10 @@
+// Magnify the grid twice to find all the edge cases
+// Consider some curved cases
+// Check if any of the 8-direction points are not occupied by the shape
+// Run dfs(or bfs) to find the shortest path. bfs should be okay since in-degre of every node in graph <= 1
+// Time complexity: board length : n. O(n^2)
+// Space complextiy: O(n^2)
+
 class Queue {
     constructor() {
         this.front = [];
@@ -57,6 +64,8 @@ const getValidNearbyPositions = (board, position) => getNearbyPositions(position
 
 const Json = (value) => JSON.stringify(value);
 
+const checkPositionEqual = ([ x1, y1 ], [ x2, y2 ]) => x1 === x2 && y1 === y2;
+
 function solution(rectangles, characterX, characterY, itemX, itemY) {
     const board = Array.from({ length: 102, }, () => Array.from({ length: 102 }, () => 0));
     
@@ -72,29 +81,30 @@ function solution(rectangles, characterX, characterY, itemX, itemY) {
         for (let j = 0; j <= board[0].length; j++) {
             if (board[i][j] === 0) continue;
             const positions = getValidAllAroundPositions(board, [ i, j ]);
-            // if (positions.every(([ x, y ]) => board[x][y] === 1)) continue;
-            if (positions.some(([ x, y ]) => board[x][y] === 0)) {
-                board[i][j] = 2;
-            }
+            if (!positions.some(([ x, y ]) => board[x][y] === 0)) continue;
+            
+            board[i][j] = 2;
         }
     }
     
     const queue = new Queue();
+    const source = [ characterX * 2, characterY * 2 ]
     const root = {
-        node: [ 2 * characterX, 2 * characterY ],
+        node: source,
         distance: 0,
     }
+    const destination = [ itemX * 2, itemY * 2 ];
     queue.enqueue(root);
     
     let shortestDistance = Infinity;
     const visited = new Set();
-    visited.add(Json([ 2 * characterX, 2 * characterY ]));
+    visited.add(Json(source));
     
     while (!queue.isEmpty) {
         const { node, distance } = queue.dequeue();
         const [ x, y ] = node;
         
-        if (x === itemX * 2 && y === itemY * 2) {
+        if (checkPositionEqual(node, destination)) {
             shortestDistance = Math.min(shortestDistance, distance);
             return shortestDistance / 2;
         }
