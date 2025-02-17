@@ -1,9 +1,9 @@
-// for each end time, count the number of requests being processed.
-// Proof: Let's say we start measuring the number of request at time t.
-// Since there is always k in our loop that contains all the requests being processed form time t,
-// we can make sure to find the answer.
-// time complexity: O(n^2)
-// space complexity: O(n)
+// each request has [ start time, end time ]. Find the maximum number of requests that overwraps in any 1 second window
+// (+1) event at request's start time
+// (-1) event at request's end time + 1000?
+// Why end time + 1000?
+// requeest is counted in a window if request request start time <= window start time < request end time + 1000
+// so at request end time + 1000, we stop counting for the request.
 
 class Queue {
     constructor() {
