@@ -1,7 +1,7 @@
 class Queue {
-    constructor() {
+    constructor(elements) {
         this.front = [];
-        this.back = [];
+        this.back = [ ...elements ];
     }
     
     get size() {
@@ -27,7 +27,6 @@ class Queue {
     }
 }
 
-
 // run bfs to find the shortest path from the initial state to the clear state
 // represent the current state by using bitmask board representaiton and the current cursor
 
@@ -39,7 +38,9 @@ const getNearbyPositions = ([ x, y ]) => [[ x + 1, y ], [ x - 1, y ], [ x, y + 1
 
 const move = (board, [ x, y ]) => getNearbyPositions([ x, y ]).filter((position) => checkValidPosition(board, position));
 
-const copyMatrix = (matrix) => [ ...matrix.map((row) => [ ...row ])];
+const copyMatrix = (matrix) => matrix.map((row) => [ ...row ]);
+
+const checkPositionSame = ([ x1, y1, ], [ x2, y2 ]) => x1 === x2 && y1 === y2; 
 
 const jump = (board, [ x, y ]) => {
     const positions = [];
@@ -74,91 +75,88 @@ const json = (value) => JSON.stringify(value);
 const parse = (value) => JSON.parse(value);
 
 function solution(board, r, c) {   
-    const initialState = {
+    const initialStateJson = json({
         cursor: [ r, c ],
-        serializedBoard: json(board),
+        board,
         selected: null,
-    }
+    });
     const root = {
-        typingCount: 0,
-        ...initialState,
+        cost: 0,
+        stateJson: initialStateJson,
     };
-    const queue = new Queue();
-    queue.enqueue(root);
+    const queue = new Queue([ root ]);
+    const visited = new Set([ initialStateJson ]);
     
-    let minTypingCount = Infinity;
-    const visited = new Set();
-    visited.add(json(initialState));
-    
+    let minCost = Infinity;
+
     while(!queue.isEmpty) {
-        const { typingCount, cursor, serializedBoard, selected } = queue.dequeue();
-        const stateKey = json({ cursor, serializedBoard, selected });
-        const board = parse(serializedBoard);
-        const linearBoard = board.flatMap((cell) => cell);
+        const { cost, stateJson } = queue.dequeue();
+        const { cursor, board, selected, } = parse(stateJson);
         const [ x, y ] = cursor;
         
-        if (linearBoard.every((cell) => cell === 0)) {
-            minTypingCount = Math.min(minTypingCount, typingCount);
+        if (board.flat().every((cell) => cell === 0)) {
+            minCost = Math.min(minCost, cost);
             continue;
         }
         
-        const linearPosition = alignPosition(4, cursor);
-        
-        if (selected && board[selected[0]][selected[1]] === board[x][y] && (x !== selected[0] || y !== selected[1])) {
-            const copiedBoard = copyMatrix(board);
-            copiedBoard[selected[0]][selected[1]] = 0;
-            copiedBoard[x][y] = 0;
-            
-            const nextState = {
-                cursor,
-                serializedBoard: json(copiedBoard),
-                selected: null,
-            }
-            const nextStateKey = json(nextState);
+        const around = move(board, cursor);
+        const jumps = jump(board, cursor);
+        [ ...around, ...jumps ].forEach((next) => {
+            const nextStateJson = json({
+                cursor: next,
+                board,
+                selected,
+            })
             const nextNode = {
-                typingCount: typingCount + 1,
-                ...nextState,
+                cost: cost + 1,
+                stateJson: nextStateJson,
             };
-            if (!visited.has(nextStateKey)) {
+            if (!visited.has(nextStateJson)) {
                 queue.enqueue(nextNode);
-                visited.add(nextStateKey);
+                visited.add(nextStateJson);
             }
-        } else if (!selected && board[x][y]) {
-            const nextState = {
-                cursor,
-                serializedBoard: json(board),
-                selected: [ x, y ],
+        });
+        
+        if (selected && !checkPositionSame(cursor, selected)) {
+            const [ x1, y1 ] = cursor;
+            const [ x2, y2 ] = selected;
+            if (board[x1][y1] === board[x2][y2]) {
+                const newBoard = copyMatrix(board);
+                newBoard[x1][y1] = 0;
+                newBoard[x2][y2] = 0;
+                const nextStateJson = json({
+                    cursor,
+                    board: newBoard,
+                    selected: null,
+                });
+                const nextNode = {
+                    cost: cost + 1,
+                    stateJson: nextStateJson,
+                };
+                if (!visited.has(nextStateJson)) {
+                    queue.enqueue(nextNode);
+                    visited.add(nextStateJson);
+                }
             }
-            const nextStateKey = json(nextState);
-            const nextNode = {
-                typingCount: typingCount + 1,
-                ...nextState,
-            }
-            if (!visited.has(nextStateKey)) {
-                queue.enqueue(nextNode);
-                visited.add(nextStateKey);
-            }
+            
         }
         
-        const aroundPositions = move(board, [ x, y ]);
-        const jumpedPositions = jump(board, [ x, y ]);
-        [ ...aroundPositions, ...jumpedPositions ].forEach((nextCursor) => {
-            const nextState = {
-                cursor: nextCursor,
-                serializedBoard,
-                selected,
-            }
-            const nextStateKey = json(nextState);
+        if (!selected && board[x][y]) {
+            const nextStateJson = json({
+                cursor,
+                board: board,
+                selected: [ x, y ],
+            });
             const nextNode = {
-                typingCount: typingCount + 1,
-                ...nextState
-            };
-            if (!visited.has(nextStateKey)) {
-                queue.enqueue(nextNode);
-                visited.add(nextStateKey);
+                cost: cost + 1,
+                stateJson: nextStateJson,
             }
-        });   
+            if (!visited.has(nextStateJson)) {
+                queue.enqueue(nextNode);
+                visited.add(nextStateJson);
+            }
+        }
     }
     
-    return minTypingCount;
+    return minCost;
 }
