@@ -42,7 +42,7 @@ function solution(edges, target) {
         if (!selectedLeaves[leaf]) selectedLeaves[leaf] = 0;
         selectedLeaves[leaf] += 1;
         if (Object.entries(selectedLeaves).some(([ node, visitCount ]) => visitCount > target[node - 1])) return [ -1 ];
-        if (indexedTarget.every((count, node) => count === 0 || (selectedLeaves[node] && selectedLeaves[node] * 3 >= count))) break;
+        if (indexedTarget.every((sum, node) => sum === 0 || (selectedLeaves[node] && selectedLeaves[node] * 3 >= sum))) break;
     }
     
     const table = Object.entries(selectedLeaves).reduce((accumulator, [ leaf, visitCount ]) => {
@@ -57,7 +57,7 @@ function solution(edges, target) {
             if (offset === 1) {
                 values[i] -= 1;
                 offset -= 1;
-                break;
+                continue;
             }
             values[i] -= 2;
             offset -= 2;
