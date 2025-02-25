@@ -29,11 +29,9 @@ function solution(N, number) {
     
     let minimalCount = Infinity;
     for (let i = 0; i < dp.length; i++) {
-        [ ...dp[i] ].forEach((num) => {
-            if (dp[i].has(number)) {
+        if (dp[i].has(number)) {
                 minimalCount = Math.min(minimalCount, i);
-            }
-        })
+        }
     }
     return minimalCount === Infinity ? -1 : minimalCount;
 }
