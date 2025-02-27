@@ -2,6 +2,8 @@
 // Create a dp array and post-order traverse the array and compute the folloing:
 // dp[node] = (sum of dp when choosing all the children), (sum of dp when choosing the minimum cost of each subtree)
 // return min(dp[root])
+// time complexity: O(n + m) = O(n) for post order traversing
+// space complexity: O(m) = O(n) for maintaing tree
 
 
 const constructGraph = (edges) => edges.reduce((accumulator, [ source, destination ]) => {
