@@ -1,7 +1,7 @@
 // Construct a tree and virtualy set 1 as root node.
 // Create a dp array and post-order traverse the array and compute the folloing:
-// dp[node] = min((sum of grandchildren dp) + 1, (sum of children dp))
-// return dp[1] for the answer;
+// dp[node] = (sum of dp when choosing all the children), (sum of dp when choosing the minimum cost of each subtree)
+// return min(dp[root])
 
 
 const constructGraph = (edges) => edges.reduce((accumulator, [ source, destination ]) => {
@@ -13,7 +13,6 @@ const constructGraph = (edges) => edges.reduce((accumulator, [ source, destinati
 }, {});
 
 const convertToTree = (graph, root) => {
-    let node = root;
     const stack = [ root ];
     while (stack.length) {
         const node = stack.pop();
@@ -31,8 +30,6 @@ const convertToTree = (graph, root) => {
 
 const getChildren = (graph, node) => graph[node];
 
-const getGrandchildren = (graph, node) => getChildren(graph, node).flatMap((child) => getChildren(graph, child));
-
 function postOrderTraverse(tree) {
     const root = 1;
     const rootState = {
@@ -40,8 +37,6 @@ function postOrderTraverse(tree) {
         visited: false,
     };
     const stack = [ rootState ];
-    const visitedNodes = new Set([ root ]);
-    
     const computed = new Map();
     
     while (stack.length) {
@@ -54,20 +49,15 @@ function postOrderTraverse(tree) {
             
             const children = getChildren(tree, node);
             children.forEach((nextNode) => {
-                if (!visitedNodes.has(nextNode)){
                     stack.push({
                         node: nextNode,
                         visited: false,
                     });
-                    visitedNodes.add(nextNode);
-                } 
             });
-            
             continue;
         }
         
         const children = getChildren(tree, node);
-        
         if (children.length === 0) {
             computed.set(node, [ 1, 0 ]);
             continue;
@@ -85,8 +75,6 @@ function postOrderTraverse(tree) {
 function solution(n, lighthouse) {
     const graph = constructGraph(lighthouse);
     const tree = convertToTree(graph, 1);
-    
-    
     return postOrderTraverse(tree);
 }
 
