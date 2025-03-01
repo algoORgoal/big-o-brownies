@@ -1,35 +1,71 @@
-// Bruteforce: exploring every possible state
-// it runs in O(n^2) time
-// 
+
+
 
 function solution(s)
 {
-    let maximum = -Infinity;
-    let count = 0; 
-    for (let i = 0; i < s.length; i++) {
-        for (let j = 0; i + j < s.length && i - j >= 0; j++) {
-            if (j === 0) {
-                count += 1;
-                continue;
-            }
-            if (s[i + j] !== s[i - j]) break;
-            count += 2;
+    return manacher(s);
+}
+
+function manacher(s) {
+    const t = `#${s.split('').join('#')}#`;
+    const { center, radius, computed } = [ ...t ].reduce(({ center, radius, computed }, element, index, array) => {
+        if (index === 0) {
+            computed.set(index, 0);
+            return {
+                center,
+                radius,
+                computed,
+            };
+        }
+        const mirror = 2 * center - index;
+        let [ left, right ] = [ center - radius, center + radius ];
+        
+        let [ currentRadius, currentLeft, currentRight ] = [ 0, index, index ];
+        
+        if (index <= right) {
+            currentRadius = Math.min(computed.get(mirror), mirror - left);
+            [ currentLeft, currentRight ] = [ index - currentRadius, index + currentRadius ];
+        }
+        
+        while (currentLeft - 1 >= 0 && currentRight + 1 < array.length && array[currentLeft - 1] === array[currentRight + 1]) {
+            currentRadius += 1;
+            [ currentLeft, currentRight ] = [ index - currentRadius, index + currentRadius ]
+        }
+        
+        computed.set(index, currentRadius);
+        
+        if (currentRight > right) {
+            return {
+                center: index,
+                radius: currentRadius,
+                computed,
+            }   
+        }
+        
+        return {
+            center,
+            radius,
+            computed,
+        };
             
+    }, {
+        center: 0,
+        radius: 0,
+        computed: new Map(),
+    });
+    
+    const { index, radius: maxRadius } = [ ...computed ].reduce((accumulator, [ index, radius ]) => {
+        if (accumulator.radius < radius) {
+            return {
+                radius,
+                index,
+            };
         }
-        maximum = Math.max(maximum, count);
-        count = 0;
-    }
+        return accumulator;
+    }, {
+        index: 0,
+        radius: computed.get(0),
+    });
     
-    
-    for (let i = 0; i < s.length; i++) {
-        for (let j = 0; i + j + 1 < s.length && i - j >= 0; j++) {
-            const pair = [ i - j, i + j + 1 ];
-            if (s[pair[0]] !== s[pair[1]]) break;
-            count += 2;   
-        }
-        maximum = Math.max(maximum, count);
-        count = 0;
-    }
-    
-    return maximum;
+    return [...t.slice(index - maxRadius, index + maxRadius + 1)].filter((character) => character !== '#').length;
 }
