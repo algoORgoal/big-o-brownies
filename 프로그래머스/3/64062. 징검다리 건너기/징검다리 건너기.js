@@ -4,34 +4,43 @@
 // k <= n이므로 그대로 실행하면 O(n^2)의 시간복잡도를 가진다.
 // 따라서, 이진탐색을 사용하여 O(nlogn)의 시간복잡도로 줄인다.
 
+// i, i + k - 1 이내에서 이진탐색을 활용하여 최댓값을 구해야 한다.
 
-function binarySearch(stones, ) {
-    
+// binary search takes => O(log m) , m <= 200_000_000
+
+function binarySearch(stones, k) {
+    let maxStone = 0;
+    for (const stone of stones) {
+        maxStone = Math.max(maxStone, stone);
+    }
+    let [ left, right ] = [ 0, maxStone ];
+    while (left < right) {
+        const mid = Math.ceil((left + right) / 2);
+        
+        if (canCross(stones, k, mid)) {
+            left = mid;
+            continue;
+        }
+        right = mid - 1;
+    }
+    return left;
 }
 
+function canCross(stones, k, mid) {
+    let zeroCount = 0;
+    for (const stone of stones) {
+        if (stone - mid < 0) {
+            zeroCount++;
+            if (zeroCount >= k) return false;
+        } else {
+            zeroCount = 0;
+        }
+    }
+    return true;
+}
+
+ 
+
 function solution(stones, k) {
-    const available = Array.from({ length: stones.length }, () => 0);
-    const table = stones.reduce((accumulator, stone, index) => {
-        if (!(stone in accumulator)) accumulator[stone] = new Set();
-        accumulator[stone].add(index);
-        return accumulator;
-    }, {});
-    console.log(table);
-//     for (let i = 0; i < stones.length - k +  1;){
-//         let maxIndex = i + 1;
-//         for (let j = 0; j < k; j++) {
-//             if (stones[i + j] > available[i]) {
-//                 available[i] = Math.max(available[i], stones[i + j]);
-//                 maxIndex = i + j;      
-//             }
-//         }
-//         i = maxIndex;
-//     }
-    
-//     let minimum = available[0];
-//     for (let i = 0; i < available.length; i++) {
-//         if (available[i] === 0) continue;
-//         if (minimum > available[i]) minimum = available[i];
-//     }
-//     return minimum;
+    return binarySearch(stones, k);
 }
