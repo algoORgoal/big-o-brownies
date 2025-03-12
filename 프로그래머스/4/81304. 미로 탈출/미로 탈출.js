@@ -4,7 +4,7 @@
 // 시간복잡도: O((n * 2^10 + m)log(n * 2^10))
 // 공간복잡도: O(n * 2^10 + m)
 
-class PriorityQueue {
+class Heap {
     constructor() { 
         this.heap = [];
     }
@@ -41,8 +41,7 @@ class PriorityQueue {
     
     insert(node) {
         this.heap.push(node);
-        if (this.size === 1) return;
-        this.bubbleUp();
+        if (this.size > 1) this.bubbleUp();
     }
     
     bubbleDown() {
@@ -72,12 +71,12 @@ class PriorityQueue {
     }
 }
 
-const generateGraph = (roads) => roads.reduce((accumulator, [ source, destination, cost ]) => {
-    if (!(source in accumulator)) accumulator[source] = [];
-    if (!(destination in accumulator)) accumulator[destination] = [];
-    accumulator[source].push({ adjacent: destination, cost, isOriginal: true });
-    accumulator[destination].push({ adjacent: source, cost, isOriginal: false });
-    return accumulator;
+const generateGraph = (roads) => roads.reduce((acc, [ from, to, cost ]) => {
+    if (!(from in acc)) acc[from] = [];
+    if (!(to in acc)) acc[to] = [];
+    acc[from].push({ from, to, cost, isOriginal: true });
+    acc[to].push({ from: to, to: from, cost, isOriginal: false });
+    return acc;
 }, {})
 
 function solution(n, start, end, roads, traps) {
@@ -86,17 +85,12 @@ function solution(n, start, end, roads, traps) {
 }
 
 const json = (value) => JSON.stringify(value);
-const parse = (value) => JSON.parse(value);
 
-const checkTraversable = (graph, edge, trapBitmap, trapIndices) => {
-    const isSourceReversed = edge.source in trapIndices && Boolean(trapBitmap & (1 << trapIndices[edge.source]));
-    const isDestinationReversed = edge.destination in trapIndices && Boolean((trapBitmap & (1 << trapIndices[edge.destination])));
+const canCross = (edge, trapBitmap, trapIndices) => {
+    const isSourceReversed = edge.from in trapIndices && Boolean(trapBitmap & (1 << trapIndices[edge.from]));
+    const isDestinationReversed = edge.to in trapIndices && Boolean((trapBitmap & (1 << trapIndices[edge.to])));
     const isReversed = isSourceReversed !== isDestinationReversed;
-    if (edge.isOriginal && isReversed) return false;
-    if (edge.isOriginal && !isReversed) return true;
-    if (!edge.isOriginal && isReversed) return true;
-    if (!edge.isOrignal && !isReversed) return false;
-    throw new Error("source and reserved don't match")
+    return edge.isOriginal ? !isReversed : isReversed;
 }
 
 function dijkstra(source, destination, graph, traps) {
@@ -104,41 +98,29 @@ function dijkstra(source, destination, graph, traps) {
         accumulator[trap] = index;
         return accumulator;
     }, {});
-    const initialState = {
-        value: source,
-        trapBitmap: 0,
-    };
-    const initialNode = {
-        ...initialState,
-        cost: 0,
-    };
-    const visited = new Map();
-    const priorityQueue = new PriorityQueue();
-    priorityQueue.insert(initialNode);
+    
+    const visited = new Set();
+    const priorityQueue = new Heap();
+    priorityQueue.insert({ value: source, trapBitmap: 0, cost: 0 });
     
     while (!priorityQueue.isEmpty) {
         const { value, trapBitmap, cost, } = priorityQueue.delete();
         
         const key = json({ value, trapBitmap });
         if (visited.has(key)) continue;
-        visited.set(key, cost);
+        visited.add(key);
         
-        if (value === destination) {
-            return cost;
-        }
+        if (value === destination) return cost;
         
-        graph[value].forEach(({ adjacent, cost: newCost, isOriginal }) => {
-            const isTraversable = checkTraversable(graph, { source: value, destination: adjacent, isOriginal }, trapBitmap, trapIndices);
-            if (isTraversable) {
-                const isAdjacentTrap = adjacent in trapIndices;
-                const newTrapBitmap = isAdjacentTrap ? trapBitmap ^ (1 << trapIndices[adjacent]) : trapBitmap;
-                const newState = { value: adjacent, trapBitmap: newTrapBitmap };
-                
-                const newKey = json(newState);
-                if (!visited.has(newKey)) {
-                    priorityQueue.insert({ ...newState, cost: cost + newCost, });
-                }
+        const adjacentNodes = graph[value].filter((edge) => canCross(edge, trapBitmap, trapIndices));
+        adjacentNodes.forEach((edge) => {
+            const isTrap = edge.to in trapIndices;
+            const newTrapBitmap = isTrap ? trapBitmap ^ (1 << trapIndices[edge.to]) : trapBitmap;
+            const newKey = json({ value: edge.to, trapBitmap: newTrapBitmap});
+            if (!visited.has(newKey)) {
+                priorityQueue.insert({ value: edge.to, trapBitmap: newTrapBitmap, cost: cost + edge.cost, });
             }
+            
         });
     }
     
