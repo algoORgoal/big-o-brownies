@@ -75,14 +75,13 @@ class PriorityQueue {
 const generateGraph = (roads) => roads.reduce((accumulator, [ source, destination, cost ]) => {
     if (!(source in accumulator)) accumulator[source] = [];
     if (!(destination in accumulator)) accumulator[destination] = [];
-    accumulator[source].push([ destination, cost, true ]);
-    accumulator[destination].push([ source, cost, false ]);
+    accumulator[source].push({ adjacent: destination, cost, isOriginal: true });
+    accumulator[destination].push({ adjacent: source, cost, isOriginal: false });
     return accumulator;
 }, {})
 
 function solution(n, start, end, roads, traps) {
     const graph = generateGraph(roads);
-    
     return dijkstra(start, end, graph, traps);
 }
 
@@ -128,14 +127,12 @@ function dijkstra(source, destination, graph, traps) {
             return cost;
         }
         
-        
-        
-        graph[value].forEach(([ destination, newCost, isOriginal ]) => {
-            const isTraversable = checkTraversable(graph, { source: value, destination, isOriginal }, trapBitmap, trapIndices);
+        graph[value].forEach(({ adjacent, cost: newCost, isOriginal }) => {
+            const isTraversable = checkTraversable(graph, { source: value, destination: adjacent, isOriginal }, trapBitmap, trapIndices);
             if (isTraversable) {
-                const isDestinationTrap = destination in trapIndices;
-                const newTrapBitmap = isDestinationTrap ? trapBitmap ^ (1 << trapIndices[destination]) : trapBitmap;
-                const newState = { value: destination, trapBitmap: newTrapBitmap };
+                const isAdjacentTrap = adjacent in trapIndices;
+                const newTrapBitmap = isAdjacentTrap ? trapBitmap ^ (1 << trapIndices[adjacent]) : trapBitmap;
+                const newState = { value: adjacent, trapBitmap: newTrapBitmap };
                 
                 const newKey = json(newState);
                 if (!visited.has(newKey)) {
