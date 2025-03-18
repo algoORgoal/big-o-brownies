@@ -1,24 +1,27 @@
 from collections import deque
-
+# prefix sum을 사용해도 rotateshift 연산으로 인해 너무 복잡해져버리기 때문에, matrix를 deque로 관리하기
+# 첫번째, 마지막 column, 이를 제외한 rows를 따로 관리하기
+# shift row 연산: O(1)
+# rotate 연산: O(1)
+# O((r + 1) * n) = O(rn), r <= 50,000, n <= 100,000
 
 def solution(rc, operations):
-    N = len(rc)
-    M = len(rc[0])
-    left_col = deque([rc[i][0] for i in range(N)])
-    right_col = deque([rc[i][M - 1] for i in range(N)])
-    rows = deque([deque(rc[i][1:M - 1]) for i in range(N)])
-
-    for op in operations:
-        if op == 'ShiftRow':
-            left_col.appendleft(left_col.pop())
+    row_count, column_count = len(rc), len(rc[0])
+    first_column = deque([ rc[i][0] for i in range(len(rc)) ])
+    last_column = deque([ rc[i][column_count - 1] for i in range(len(rc))])
+    rows = deque([ deque(rc[i][1: column_count - 1]) for i in range(len(rc)) ])
+    for operation in operations:
+        if operation == "ShiftRow":
+            first_column.appendleft(first_column.pop())
+            last_column.appendleft(last_column.pop())
             rows.appendleft(rows.pop())
-            right_col.appendleft(right_col.pop())
-        else:  # 'Rotate'
-            rows[0].appendleft(left_col.popleft())
-            right_col.appendleft(rows[0].pop())
-            rows[N - 1].append(right_col.pop())
-            left_col.append(rows[N - 1].popleft())
-    answer = []
-    for i in range(N):
-        answer.append([left_col[i]] + list(rows[i]) + [right_col[i]])
-    return answer
+        else:
+            rows[0].appendleft(first_column.popleft())
+            last_column.appendleft(rows[0].pop())
+            rows[row_count - 1].append(last_column.pop())
+            first_column.append(rows[row_count - 1].popleft())
+
+    result = [ [ first_column[i], *rows[i] ,last_column[i] ]  for i in range(row_count)]
+    return result
+    
+        
