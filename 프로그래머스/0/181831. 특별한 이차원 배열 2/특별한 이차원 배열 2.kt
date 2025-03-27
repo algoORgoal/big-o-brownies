@@ -1,9 +1,9 @@
 class Solution {
     fun solution(arr: Array<IntArray>): Int {
-        val isSatisfied = arr.withIndex().all { 
-            (i, row) -> 
-            row.withIndex().all {
-                (j, num) ->
+        val isSatisfied = arr.indices.all { 
+            i -> 
+            arr[i].indices.all {
+                j ->
                 arr[i][j] == arr[j][i]
             }
         }
