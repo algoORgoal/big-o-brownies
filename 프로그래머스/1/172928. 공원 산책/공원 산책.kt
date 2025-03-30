@@ -6,8 +6,7 @@ class Solution {
             x to y
         }
         
-        val (matrix, last) = routes.foldIndexed(park to start) { index, acc, route ->
-            val (matrix, current) = acc
+        val last = routes.foldIndexed(start) { index, current, route ->
             val (x, y) = current
             val (op, distanceStr) = route.split(" ")
             val distance = distanceStr.toInt() + 1
@@ -18,13 +17,13 @@ class Solution {
                 "W" -> List(distance) { x to y - it }
                 else -> List(distance) { x to y + it }
             }
-            val isPathValid = path.all { (x, y) -> if (matrix.getOrNull(x)?.getOrNull(y) != null && matrix.getOrNull(x)?.getOrNull(y) != 'X') true else false }
+            val isPathValid = path.all { (x, y) -> if (park.getOrNull(x)?.getOrNull(y) != null && park.getOrNull(x)?.getOrNull(y) != 'X') true else false }
             
             if (isPathValid) {
                 val next = path.last()
-                matrix to next
+                next
             }
-            else matrix to current
+            else current
         }
         return last.toList().toIntArray()
     }
