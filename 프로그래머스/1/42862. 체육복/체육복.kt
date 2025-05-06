@@ -1,36 +1,24 @@
 class Solution {
     fun solution(n: Int, lost: IntArray, extra: IntArray): Int {
-        val lostUniformSet = lost.toMutableSet()
-        val extraUniformSet = extra.toMutableSet()
+        val unaffectStudentCount = n - lost.size
+        val recoverableStudentCount = lost.toSet().intersect(extra.toSet()).size
+        val shareable = extra.toSet() - lost.toSet()
+        val helped = (lost.toSet() - extra.toSet()).toMutableSet()
         
-        val recoverableStudentCount = extra.fold(0) { acc, extraUniform ->
-            if (extraUniform in lostUniformSet) {
-                lostUniformSet.remove(extraUniform)
-                extraUniformSet.remove(extraUniform)
-                acc + 1
-            }
-            else {
-                acc
-            }
-        }
-        
-        val compensableStudentCount = extraUniformSet.toSortedSet().fold(0) { acc, extraUniform -> 
+        val helpedStudentCount = shareable.toSortedSet().toList().fold(0) { acc, uniform ->
             when {
-                (extraUniform - 1) in lostUniformSet -> {
-                    lostUniformSet.remove(extraUniform - 1)
+                (uniform - 1) in helped -> {
+                    helped.remove(uniform - 1)
                     acc + 1
                 }
-                (extraUniform + 1) in lostUniformSet -> {
-                    lostUniformSet.remove(extraUniform + 1)
+                (uniform + 1) in helped -> {
+                    helped.remove(uniform + 1)
                     acc + 1
                 }
                 else -> acc
             }
         }
         
-        val unaffectedStudentCount = n - lost.size
-        val coveredStudentCount = recoverableStudentCount + compensableStudentCount + unaffectedStudentCount
-        
-        return coveredStudentCount
+        return unaffectStudentCount + helpedStudentCount + recoverableStudentCount
     }
 }
