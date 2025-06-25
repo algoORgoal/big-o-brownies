@@ -1,3 +1,8 @@
+// each row has unique queen
+// each column has unique queen
+// each diagonal direction has unique queen
+// time complexity: O(n!)
+
 class Solution {
     fun backtracking(n: Int, currentRow: Int, visitedColumns: MutableSet<Int>, visitedLeftDiagonals: MutableSet<Int>, visitedRightDiagonals: MutableSet<Int>): Int {
         if (currentRow == n) {
