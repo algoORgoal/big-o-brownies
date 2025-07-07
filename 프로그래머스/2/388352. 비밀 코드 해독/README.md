@@ -1,10 +1,10 @@
 # [level 2] 비밀 코드 해독 - 388352 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/388352) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/388352?gad_source=1&gad_campaignid=22199869887&gbraid=0AAAAAC_c4nBUvVghph3s5KLGeXC2e198r&gclid=CjwKCAjw4K3DBhBqEiwAYtG_9K84fobkXajb7NO7_mUULMuuWg_QP6kc3HfvinypJubL9FuNSSXu-BoC0A4QAvD_BwE) 
 
 ### 성능 요약
 
-메모리: 223 MB, 시간: 443.83 ms
+메모리: 217 MB, 시간: 284.68 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 07월 08일 01:31:56
+2025년 07월 08일 01:48:13
 
 ### 문제 설명
 
