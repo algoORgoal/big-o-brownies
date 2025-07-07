@@ -1,24 +1,6 @@
 class Solution {
-    fun combination(n: Int, k: Int, current: List<Int>): List<List<Int>> {
-        if (current.size == k) return listOf(current)
-        val range = if (current.isEmpty()) 1..n else current[current.size - 1]..n
-        return range.fold(emptyList()) { acc, element ->
-            if (element in current) acc
-            else acc + combination(n, k, current + element)
-        }
-    }
-    
-    
     fun solution(n: Int, q: Array<IntArray>, ans: IntArray): Int {
-        val lists = combination(n, 5, emptyList())
-        
-        return lists.filter { list -> 
-            q.withIndex().all { (index, query) ->
-                query.filter { number -> number in list }.size == ans[index]
-            } 
-        }.size
-        return 0
+        var answer: Int = 0
+        return answer
     }
 }
-
-// 30C5 = 142506
