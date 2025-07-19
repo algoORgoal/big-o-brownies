@@ -9,14 +9,11 @@ class Solution {
     
     
     fun solution(w: Int, h: Int): Long {
-        // val (short, long) = if (w < h) w to h else h to w
         val sum = (0 downTo (- (h - 1))).asSequence().fold(0.toLong()) { acc, y ->
             val x_1 = getX(y, w, h)
             val x_2 = getX(y - 1, w, h)
             
-            
-            
-            val current = (ceil(x_1).toInt()..floor(x_2).toInt()).count {
+            val current = (ceil(x_1).toInt()..floor(x_2).toInt()).asSequence().count {
                 it.toDouble() != x_1 && it.toDouble() != x_2
             } + 1
             
