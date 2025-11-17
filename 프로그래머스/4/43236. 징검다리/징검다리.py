@@ -11,6 +11,10 @@
 # 제거해야하는 바위 개수가 n 이하 => 다음 이진탐색의 range는 (mid, end) => 이 속에 만족하는 정답 항상 있음
 # 제거해야하는 바위의 개수가 n 초과 => 다음 이진탐색의 range는 (start, mid - 1) => 이 속에 만족하는 정답 항상 있음
 
+# 도착 지점을 넣어서 바위 - 도착 지점 사이 거리도 만족하는지 확인
+# 0 - 도착 지점 확인 => 어차피 모든 바위 제거하였음, count + 1 = num(rocks) + 1 되면 정답이 아님 (1 <= n <= num(rocks))
+# 바위 - 도착 지점 확인 => 바위를 제거 => 이전 바위 - 바위 거리는 target_distance 이상이였을 것이므로 만족함
+
 from math import ceil
 
 def solution(distance, rocks, n):
