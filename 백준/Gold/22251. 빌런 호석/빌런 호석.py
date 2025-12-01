@@ -21,7 +21,7 @@ table = {
 }
 
 def solution(n, k, p, x):
-    return dfs(n, 0, k, p, x) - 1 if x <= n else dfs(n, 0, k, p, x)
+    return dfs(n, 0, k, p, x) - 1
 
 def dfs(upper_bound, target_digit, digit_count, left_conversion_count, current):
     state_count = 0
@@ -54,3 +54,6 @@ if __name__ == "__main__":
     print(answer)
 
 
+# 내가 생각하지 못했던 부분
+# 앞자리를 무조건 바꾸는 노드만 각 상태에서 확인한다면, 앞자리를 그대로 두는 유효한 노드의 개수를 셀 수가 없다.
+# 따라서 노드의 개수르 
