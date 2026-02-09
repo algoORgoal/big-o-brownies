@@ -11,15 +11,8 @@ def solution(land):
     for i in range(0, rowCount):
         for j in range(0, colCount):
             if visited[i][j] == False and land[i][j] > 0:
-                chunk = []
-                dfs(land, i, j, visited, chunk, (i, j))
-                for chunkX, chunkY in chunk:
-                    land[chunkX][chunkY] = land[i][j]
+                dfs(land, i, j, visited, (i, j))
                     
-                    
-    
-    
-    
     maxSum = 0
     for j in range(0, colCount):
         sum = 0
@@ -29,7 +22,8 @@ def solution(land):
                 id = visited[i][j]
                 if id not in columnSet:
                     columnSet.add(id)
-                    sum += land[i][j]
+                    idX, idY = id
+                    sum += land[idX][idY]
             
         maxSum = max(sum, maxSum)
         
@@ -39,9 +33,8 @@ def solution(land):
     
                 
                 
-def dfs(land, x, y, visited, chunk, id):
+def dfs(land, x, y, visited, id):
     visited[x][y] = id
-    chunk.append([x, y])
     
     rowCount = len(land)
     colCount = len(land[0])
@@ -53,7 +46,7 @@ def dfs(land, x, y, visited, chunk, id):
     for nextX, nextY in next:
         if 0 <= nextX < rowCount and 0 <= nextY < colCount:
             if visited[nextX][nextY] == False and land[nextX][nextY] > 0:
-                dfs(land, nextX, nextY, visited, chunk, id)
+                dfs(land, nextX, nextY, visited, id)
                 total += land[nextX][nextY]
         
     land[x][y] = total + land[x][y]
@@ -62,7 +55,8 @@ def dfs(land, x, y, visited, chunk, id):
 # 못찾은 반례: [ 1 1 1] [1 0 1] [ 1 1 1 ]
 # 가운데 뚫려있는 것
     
-    
+# 상태 정의에 필요한 것:
+# x, y, id(i,j)
     
     
 
