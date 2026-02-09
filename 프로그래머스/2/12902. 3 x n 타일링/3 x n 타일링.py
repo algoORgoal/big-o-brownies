@@ -10,23 +10,20 @@ def solution(n):
     
     dp[3][0] = 1
     dp[3][2] = 3
-    
-    s = [ 0 for i in range(0, n + 1) ]
-    s[0] = 1
-    s[2] = 4
     for i in range(4, n + 1):
         if i % 2 == 0:
             # dp[3][i] = (dp[2][i] * 2 - 1 + dp[3][i - 4] * 2) % 1_000_000_007
-            dp[3][i] = (dp[3][i - 2] * 3 + s[i - 4] * 2) % 1_000_000_007
-            s[i] = (dp[3][i] + s[i - 2]) % 1_000_000_007
+            special_pattern_sum = 0
+            j = 4
+            while i - j >= 0:
+                special_pattern_sum += (dp[3][i - j] * 2) % 1_000_000_007
+                j += 2
+            
+            dp[3][i] = (dp[3][i - 2] * 3 + special_pattern_sum) % 1_000_000_007
         
+
     
     return dp[3][n]
-
-# dp[3][i] = dp[3][i - 2] * 3 + (dp[3][i - 4] + dp[3][i - 6] + ... ) * 2
-# S[i] = dp[i] + dp[i - 2] + dp[i - 4] + ...
-# S[i] = dp[i] + S[i - 2]
-# dp[3][i] = dp[3][i - 2] * 3 + S[i - 4]
 
 # 시간복잡도 O(n ** 2)
 # 공간복잡도 O(n)
