@@ -1,10 +1,10 @@
 # [level 4] 사칙연산 - 1843 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/1843#) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/1843?language=python3) 
 
 ### 성능 요약
 
-메모리: 47.4 MB, 시간: 106.28 ms
+메모리: 10.5 MB, 시간: 160.11 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 02월 18일 17:22:21
+2026년 02월 10일 19:55:37
 
 ### 문제 설명
 
