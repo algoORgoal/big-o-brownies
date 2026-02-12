@@ -4,28 +4,26 @@ def solution(bridge_length, weight, truck_weights):
     time = 0
     
     waiting_trucks = deque(truck_weights)
-    on_bridge_trucks = deque()
+    on_bridge_timeline = deque()
     weight_sum = 0
     
-    while len(waiting_trucks) > 0 or len(on_bridge_trucks) > 0:
+    while len(waiting_trucks) > 0 or len(on_bridge_timeline) > 0:
         time += 1
         
-        for i in range(0, len(on_bridge_trucks)):
-            on_bridge_trucks[i][1] += 1
-            
-        
-            
-        if len(on_bridge_trucks) > 0:
-            last_on_bridge_truck = on_bridge_trucks[len(on_bridge_trucks) - 1]
-            if last_on_bridge_truck[1] == bridge_length:
-                on_bridge_trucks.pop()
-                weight_sum -= last_on_bridge_truck[0]
+        for i in range(0, len(on_bridge_timeline)):
+            on_bridge_timeline[i][1] += 1
+    
+        if len(on_bridge_timeline) > 0:
+            last_on_bridge_truck, last_on_bridge_time  = on_bridge_timeline[len(on_bridge_timeline) - 1]
+            if last_on_bridge_time == bridge_length:
+                on_bridge_timeline.pop()
+                weight_sum -= last_on_bridge_truck
         
         if len(waiting_trucks) > 0:
             first_waiting_truck = waiting_trucks[0]
             if weight_sum + first_waiting_truck <= weight:
                 waiting_trucks.popleft()
-                on_bridge_trucks.appendleft([ first_waiting_truck, 0 ])
+                on_bridge_timeline.appendleft([ first_waiting_truck, 0 ])
                 weight_sum += first_waiting_truck
 
             
