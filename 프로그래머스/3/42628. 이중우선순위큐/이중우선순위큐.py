@@ -54,5 +54,8 @@ def solution(operations):
 # min_queue와 max_queue를 별도로 운영
 # min_queue에서 삭제된 요소를 max_queue에서 접근하지 않도록 id 같이 저장
 # min_queue에서 삭제된 요소를 max_queue에서 접근하지 않도록 id 같이 저장
+
+# 시간복잡도: O(nlogn)
+# 공간복잡도: O(n)
         
     
