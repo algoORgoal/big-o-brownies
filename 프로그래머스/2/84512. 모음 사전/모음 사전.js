@@ -1,20 +1,26 @@
 function solution(word) {
     
-    const visited = []
-    preorderTraverse(visited, '');
-    return visited.findIndex((term) => term === word) + 1;
+    
+    return preorderTraverse(word);
 }
-        
-function preorderTraverse(visited, str, depth = 0) {
-    if (str) {
-        visited.push(str);
+
+let found = false;
+
+function preorderTraverse(target, str = "", depth = 0, count = 0) {
+    console.log(str, count);
+    if (str === target) {
+        return count;
     }
     
     if (depth === 5) {
-        return;
+        return -1;
     }
     
-    [ 'A', 'E', 'I', 'O', 'U' ].forEach((character) => {
-        preorderTraverse(visited, str + character, depth + 1);
-    });
+    for (let character of [ 'A' , 'E', 'I', 'O', 'U' ]) {
+        const result = preorderTraverse(target, str + character, depth + 1, count + 1);
+        if (result !== -1) {
+            return result;
+        }
+    }
+    return -1;
 }
