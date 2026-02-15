@@ -1,47 +1,72 @@
-# 바위 위치를 오름차순으로 정렬
-# prev의 초기값: 0
-# i보다 작으면서, 제거되지 않은 바위의 위치 prev
-# i - prev < distance => i 제거 => 제거된 바위의 개수 1 증가
-# i - prev >= distance => prev = i
-
-# 제거해야하는 바위의 최소 개수가 n개 이하인 것 중 가장 distance가 가장 큰 것을 찾는다.
-
-# k 거리를 확보하기 위해 제거해야하는 바위의 최소 개수 <= k + 1 거리를 확보하기 위해 제거해야하는 바위의 최소 개수
-# 거리 k에 대해서 이진 탐색을 시도해본다. 
-# 제거해야하는 바위 개수가 n 이하 => 다음 이진탐색의 range는 (mid, end) => 이 속에 만족하는 정답 항상 있음
-# 제거해야하는 바위의 개수가 n 초과 => 다음 이진탐색의 range는 (start, mid - 1) => 이 속에 만족하는 정답 항상 있음
-
-# 도착 지점을 넣어서 바위 - 도착 지점 사이 거리도 만족하는지 확인
-# 0 - 도착 지점 확인 => 어차피 모든 바위 제거하였음, count + 1 = num(rocks) + 1 되면 정답이 아님 (1 <= n <= num(rocks))
-# 바위 - 도착 지점 확인 => 바위를 제거 => 이전 바위 - 바위 거리는 target_distance 이상이였을 것이므로 만족함
-
 from math import ceil
 
 def solution(distance, rocks, n):
     rocks.sort()
-    rocks.append(distance)
-    start = 0
-    end = distance
-    while start < end:
-        mid = ceil((start + end) / 2)
-        count = count_minimum_rocks_to_remove(mid, rocks)
-        if count <= n:
-            start = mid
+    
+    in_between_distances = []
+    for i, rock in enumerate(rocks):
+        if i == 0: 
+            in_between_distances.append(rock)
         else:
-            end = mid - 1
+            in_between_distances.append(rocks[i] - rocks[i - 1])
+    in_between_distances.append(distance - rocks[len(rocks) - 1])
+    
+    
+    
+    start = 0
+    end = 1_000_000_000
+        
+    while start < end:
+        middle = ceil((start + end) / 2)
+        
+        
+        minimum_distance = middle
+        current_distance = in_between_distances[0]
+        destroy_count = 0
+
+        for i, in_between_distance in enumerate(in_between_distances):
+            if i == 0:
+                continue
+            elif current_distance < minimum_distance:
+                destroy_count += 1
+                current_distance += in_between_distance
+            else:
+                current_distance = in_between_distance
+        if current_distance < minimum_distance:
+            destroy_count += 1
+                        
+        # 거리 i 유지하려면 바위 n개 제거로 가능 => 거리 0 ~ (i - 1) 거리 유지하려면 바위 n개 제거로 가능
+        # 거리 i 유지하려면 바위 n개 제거로 불가능 => 거리 (i + 1) ~ n 거리 유지하려면 바위 n개 제거로 불가능
+        if destroy_count <= n:
+            start = middle
+        else:
+            end = middle - 1
     return start
+    
+
+            
     
         
     
+    
+    answer = 0
+    return answer
 
-# n 거리를 확보하기 위해 제거해야하는 바위의 최소 개수
-# the minimum number of rocks so that they are n-distant
-def count_minimum_rocks_to_remove(target_distance, rocks):
-    prev = 0
-    count = 0
-    for rock in rocks:
-        if rock - prev < target_distance:
-            count += 1
-        else:
-            prev = rock
-    return count
+
+# 0 2 11 14 17 21 25
+#  2 9  3 3  4  4
+
+# 현재 값 2
+# 9 들어올 때 2 <= d => destory => 2 + 9 = 11
+# 11 들어올 때 11 >= d => replace => 현재값 9
+# 14 들어올 때 9 >= d => replace => 현재값 3
+# 17 들어올 때 3 < d => destroy => 3 + 3 = 6
+# 21 들어올 때 4 >= d => replace => 현재값 4
+# 25 들어올 때 4 >= d => replace => 현재값 4
+
+
+# 질문: 특정 거리가 들어왔을 때, 왼쪽에서 destroy해야될까 아니면 오른쪽에서 destroy해야될까?
+
+# 거리 d를 유지하기 위해 제거해야되는 요소들의 최소 개수를 어떻게 구하지?
+# 가장 작은 것부터 순차적으로 배열 탐색하면서 제거: O(n ** 2) 2_500_000_000 => 시간초과
+
