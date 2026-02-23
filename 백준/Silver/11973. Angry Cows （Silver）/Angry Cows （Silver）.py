@@ -40,5 +40,5 @@ if __name__ == "__main__":
 
 #
 
-# time complexity: O(nlogn) + O(n) = O(nlogn)
+# time complexity: O(nlogm) (n <= 50_000, m <= 1_000_000_000)
 # space complexity: O(n)
