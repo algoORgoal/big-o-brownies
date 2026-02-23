@@ -1,15 +1,31 @@
+from math import sqrt
+
+# s = n * (2a + (n - 1)) / 2
+#   = na + n * (n - 1) / 2
+# a >= 1, n >= 1이므로 s >= n + n * (n - 1) / 2 = n * (n + 1) / 2
+# n * (n + 1) / 2 <= s
+# s_max = 10_000_000이므로 n * (n + 1) / 2 <= 10_000_000
+# 시간복잡도: O(sqrt(n))
+
+
 def solution(sum):
     # a = ((2 * sum / n) - (n - 1)) / 2
     count = 0
-    for n in range(1, 10_000_001):
+    n = 1
+    while n * (n + 1) / 2 <= 10_000_000:
         if (2 * sum) % n != 0:
+            n += 1
             continue
-        if ((2 * sum // n) - (n - 1)) % 2 != 0:
+        elif ((2 * sum // n) - (n - 1)) % 2 != 0:
+            n += 1
             continue
         a = ((2 * sum // n) - (n - 1)) // 2
         if a <= 0:
+            n += 1
             continue
+        n += 1
         count += 1
+
     return count
 
 
