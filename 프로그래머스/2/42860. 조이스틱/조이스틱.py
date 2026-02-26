@@ -18,27 +18,28 @@ def solution(name):
         if char != "A":
             positions.append(i)
             
-    if len(positions) == 0:
-        return vertical_distance
-    
-    if len(positions) == 1:
-        return vertical_distance + min(positions[0], len(name) - positions[0])
-    
-    horizontal_distance = inf
-    
-    normal = positions[len(positions) - 1]
-    opposite = len(name) - positions[0]
-    
-    
-    horizontal_distance = min(horizontal_distance, normal, opposite)
-    
-    
-    for i in range(0, len(positions) - 1):
-        reversed1 = 2 * positions[i] + len(name) - positions[i + 1]
-        reversed2 = (len(name) - positions[i + 1]) * 2 + positions[i]
-        horizontal_distance = min(horizontal_distance, reversed1, reversed2)
+    return vertical_distance + calculate_horizontal_distance(0, positions, len(name))
+
+def circular_distance(a, b, n):
+    return min(abs(a - b), n - abs(a - b))
             
-    return vertical_distance + horizontal_distance
+def calculate_horizontal_distance(current, positions, n):
+    if len(positions) == 0:
+        return 0
+    first = positions[0]
+    last = positions[len(positions) - 1]
+    
+    forward_distance = circular_distance(current, first, n)
+    a = forward_distance + calculate_horizontal_distance(first, positions[1:], n)
+    
+    if current < last:
+        backward_distance = circular_distance(current, last, n)
+        b = backward_distance + calculate_horizontal_distance(last, positions[0:-1], n)
+    else:
+        backward_distance = circular_distance(current, last, n)
+        b = backward_distance + calculate_horizontal_distance(last, positions[0:-1], n)
+    return min(a, b)
+    
     
 
 # 1. positions[i]를 기준으로 회전하여, positions[i + 1]에 도착 (정방향 / 역방향) (len(positions) > 2)
