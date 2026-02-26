@@ -1,22 +1,35 @@
+from collections import deque
+
 def solution(n, computers):
     visited = set()
     count = 0
-    print(computers)
     for i in range(0, n):
         if i not in visited:
             visited.add(i)
-            dfs(i, computers, visited)
+            bfs(computers, i, visited)
             count += 1
+
     return count
+
+def bfs(matrix, root, visited):
+    queue = deque([ root ])
     
-def dfs(current, matrix, visited):
-    for node, is_adjacent in enumerate(matrix[current]):
-        if is_adjacent == 0:
-            continue
-        if node in visited:
-            continue
-        visited.add(node)
-        dfs(node, matrix, visited)
+    while len(queue) > 0:
+        current = queue.popleft()
+        for node, is_adjacent in enumerate(matrix[current]):
+            if is_adjacent == 0:
+                continue
+            if node in visited:
+                continue
+            visited.add(node)
+            queue.append(node)
+
+    
+    
+    
+
+    
+
 
 
 # 그래프에서 connected component의 개수 세기
