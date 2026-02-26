@@ -1,59 +1,44 @@
 from math import inf
-from collections import deque
 
-def vertical_distance(char):
+def calculate_vertical_distance(char):
     start = ord('A')
     end = ord('Z')
     target = ord(char)
 
     return min(abs(target - start), abs(end - target + 1))
 
-def calculate_directional_distances(n, current, next):
-    normal_distance = next - current
-    reversed_distance = (n - next) + current + 1
-    return [normal_distance, reversed_distance]
-
-
-
 def solution(name):
-    count = 0
+    vertical_distance = 0
     for char in name:
-        count += vertical_distance(char)
+        vertical_distance += calculate_vertical_distance(char)
 
-        
-    
-    positions = deque()
+    positions = []
     for i in range(0, len(name)):
         char = name[i]
         if char != "A":
             positions.append(i)
             
     if len(positions) == 0:
-        return count
+        return vertical_distance
     
     if len(positions) == 1:
-        return count + min(calculate_directional_distances(len(name) - 1, 0, positions[0]))
+        return vertical_distance + min(positions[0], len(name) - positions[0])
     
-    distance = inf
+    horizontal_distance = inf
     
     normal = positions[len(positions) - 1]
     opposite = len(name) - positions[0]
     
     
-    distance = min(distance, normal)
-    distance = min(distance, opposite)
+    horizontal_distance = min(horizontal_distance, normal, opposite)
+    
     
     for i in range(0, len(positions) - 1):
         reversed1 = 2 * positions[i] + len(name) - positions[i + 1]
         reversed2 = (len(name) - positions[i + 1]) * 2 + positions[i]
-        distance = min(distance, reversed1)
-        distance = min(distance, reversed2)
-        
-    
-        
-    print(distance, count)
+        horizontal_distance = min(horizontal_distance, reversed1, reversed2)
             
-    return distance + count
+    return vertical_distance + horizontal_distance
     
 
 # 1. positions[i]를 기준으로 회전하여, positions[i + 1]에 도착 (정방향 / 역방향) (len(positions) > 2)
