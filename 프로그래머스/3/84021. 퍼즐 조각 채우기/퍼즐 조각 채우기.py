@@ -1,21 +1,20 @@
 def solution(game_board, table):
     inverted_game_board = [ [ game_board[i][j] ^ 1 for j in range(0, len(game_board[i])) ] for i in range(0, len(game_board)) ]
     
-    shape_points = get_shape_points(table)
-    
+    shape_map = get_shape_map(table)
     blocks = extract_blocks_from(inverted_game_board)
     
     count = 0
     
     for block in blocks:
         points = convert_to_points(block)
-        if points in shape_points and shape_points[points] > 0:
+        if points in shape_map and shape_map[points] > 0:
             rotated_blocks = get_shape(block)
             
             rotated_points = set([ convert_to_points(block) for block in rotated_blocks ])
 
             for points in rotated_points:
-                shape_points[points] -= 1
+                shape_map[points] -= 1
             count += len(points)
     
     
@@ -39,20 +38,20 @@ def extract_blocks_from(table):
                 
     return blocks
 
-def get_shape_points(table):
+def get_shape_map(table):
     blocks = extract_blocks_from(table)
                 
-    shape_points = {}
+    shape_map = {}
     for block in blocks:
         shape = get_shape(block)
         
-        rotated_points = set([ convert_to_points(block) for block in shape ])
-        for points in rotated_points:
-            if points not in shape_points:
-                shape_points[points] = 0
-            shape_points[points] += 1
+        positions = set([ convert_to_points(block) for block in shape ])
+        for position in positions:
+            if position not in shape_map:
+                shape_map[position] = 0
+            shape_map[position] += 1
             
-    return shape_points
+    return shape_map
 
 def dfs(current, table, visited):
     height, width = len(table), len(table[0])
@@ -76,12 +75,12 @@ def convert_to_block(points):
     min_y = min(point[1] for point in points)
     max_y = max(point[1] for point in points)
     block = [ [ 0 for j in range(min_y, max_y + 1) ] for i in range(min_x, max_x + 1)]
-    
-    for x, y in convert_to_absolute_points(points):
+
+    for x, y in convert_to_relative(points):
         block[x][y] = 1
     return block
 
-def convert_to_absolute_points(points):
+def convert_to_relative(points):
     min_x = min([ point[0] for point in points ])
     min_y = min([ point[1] for point in points ])
     return [ (point_x - min_x, point_y - min_y) for point_x, point_y in points]
