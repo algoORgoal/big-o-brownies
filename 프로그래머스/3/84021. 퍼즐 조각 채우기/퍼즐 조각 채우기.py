@@ -21,7 +21,7 @@ def solution(game_board, table):
     for block in blocks:
         points = convert_to_points(block)
         if points in shape_points and shape_points[points] > 0:
-            rotated_blocks = create_every_shape(block)
+            rotated_blocks = get_shape(block)
             
             rotated_points = set([ convert_to_points(block) for block in rotated_blocks ])
 
@@ -49,7 +49,7 @@ def get_shape_points(table):
                 
     shape_points = {}
     for block in blocks:
-        shape = create_every_shape(block)
+        shape = get_shape(block)
         
         rotated_points = set([ convert_to_points(block) for block in shape ])
         for points in rotated_points:
@@ -101,7 +101,7 @@ def convert_to_points(block):
 
     return tuple(sorted(points))
 
-def create_every_shape(block1):
+def get_shape(block1):
     block2 = rotate(block1)
     block3 = rotate(block2)
     block4 = rotate(block3)
@@ -122,7 +122,9 @@ def rotate(block):
 
     
     
-            
+# block: n * m matrix
+# shape: 회전시켜서 만들 수 있는 한 블럭이 만들 수 있는 가능한 조합. n * m matrix
+# 
             
 
 
