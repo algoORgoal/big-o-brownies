@@ -1,23 +1,12 @@
 def solution(game_board, table):
-    inverted_game_board = [ [ game_board[i][j] ^ 1 for j in range(0, len(game_board[i])) ] for i in range(0, len(game_board))]
+    inverted_game_board = [ [ game_board[i][j] ^ 1 for j in range(0, len(game_board[i])) ] for i in range(0, len(game_board)) ]
     
     shape_points = get_shape_points(table)
     
-    visited = set()
-    # O(n) n = i * j, 1 <= i,j <= 50
-    blocks = []
-    for i in range(0, len(inverted_game_board)):
-        for j in range(0, len(inverted_game_board[i])):
-            point = i, j
-            if point not in visited and inverted_game_board[i][j] == 1:
-                visited.add(point)
-                points = dfs(point, inverted_game_board, visited)
-                block = convert_to_block(points)
-                blocks.append(block)
+    blocks = extract_blocks_from(inverted_game_board)
     
     count = 0
     
-
     for block in blocks:
         points = convert_to_points(block)
         if points in shape_points and shape_points[points] > 0:
@@ -33,7 +22,8 @@ def solution(game_board, table):
     
     return count
 
-def get_shape_points(table):
+
+def extract_blocks_from(table):
     visited = set()
     
     # O(n) n = i * j, 1 <= i,j <= 50
@@ -46,6 +36,11 @@ def get_shape_points(table):
                 points = dfs(point, table, visited)
                 block = convert_to_block(points)
                 blocks.append(block)
+                
+    return blocks
+
+def get_shape_points(table):
+    blocks = extract_blocks_from(table)
                 
     shape_points = {}
     for block in blocks:
