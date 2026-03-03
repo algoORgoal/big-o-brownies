@@ -7,43 +7,28 @@ def solution(n, k):
 
 
 def bfs(root, visited, target):
-
     queue = deque()
-    queue.appendleft((root, 0))
-    visited.add(root)
+
+    # 거리가 같은 노드를 모두 구함
+    node = root
+    while node not in visited and 0 <= node <= 200_000:
+        visited.add(node)
+        queue.appendleft((node, 0))
+        node *= 2
 
     while len(queue) > 0:
         current, distance = queue.pop()
 
-        # 200_000이 넘는 순간, 100_000번 뒤로가기해야되어서 0 - 100_000에서 나올 수 있는 최장 거리와 동일해짐
-        # 0보다 작아지면 항상 원래 거리보다 더 멀어짐
-        if current < 0 or current >= 200_000:
-            continue
+        if current == target:
+            return distance
 
-        same_distance_nodes = []
-        node = current
+        candidates = [current - 1, current + 1]
 
-        if node == 0:
-            same_distance_nodes.append(node)
-        else:
-            while (node == current or node not in visited) and node < 200_000:
-                same_distance_nodes.append(node)
-                node *= 2
-
-        for same_distance_node in same_distance_nodes:
-            visited.add(same_distance_node)
-            if same_distance_node == target:
-                return distance
-
-        # node *= 2이 방문되었으면, node *= 4도 방문되었다.
-        # current는 현재 방문중이므로 제외
-        for same_distance_node in same_distance_nodes:
-            candidates = [same_distance_node - 1, same_distance_node + 1]
-            for candidate in candidates:
-                if candidate in visited:
-                    continue
+        for candidate in candidates:
+            while (candidate not in visited) and 0 <= candidate <= 200_000:
                 visited.add(candidate)
                 queue.appendleft((candidate, distance + 1))
+                candidate *= 2
 
     return inf
 
@@ -71,3 +56,6 @@ if __name__ == "__main__":
 # 100 = 2 ** 2 * 5 ** 2
 # 98 = 49 * 2
 # 1 => 2 =>
+
+# 0 <= candidate <= 100_000
+# O(2n) = O(n)
