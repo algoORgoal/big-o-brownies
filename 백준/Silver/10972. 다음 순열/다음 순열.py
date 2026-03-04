@@ -1,27 +1,26 @@
-import heapq
-from bisect import bisect_right
+
 
 
 def solution(n, sequence):
-    arr = []
+    i = len(sequence) - 1
 
-    while len(sequence) > 0:
-        node = sequence.pop()
-        heapq.heappush(arr, -node)
+    while i > 0:
+        if sequence[i - 1] < sequence[i]:
+            # sequence[current] > ... > sequence[n]
 
-        if len(arr) > 0 and -arr[0] > node:
-            sorted_arr = sorted([-num for num in arr])
-            target_index = bisect_right(sorted_arr, node)
-            target = sorted_arr.pop(target_index)
-            sequence.append(target)
-            for num in sorted_arr:
-                sequence.append(num)
-            break
+            j = n - 1
+            while j > i - 1:
+                if sequence[i - 1] < sequence[j]:
+                    sequence[i - 1], sequence[j] = sequence[j], sequence[i - 1] # 정렬 필요 없음. a[i] > a[i + 1] > a[j] > a[i - 1] > a[j + 1] 유지
+                    break
+                j -= 1
+            start_part = sequence[:i]
+            end_part = list(reversed(sequence[i:]))
 
-    if len(sequence) == 0:
-        return -1
+            return start_part + end_part
+        i -= 1
 
-    return sequence
+    return -1
 
 
 if __name__ == "__main__":
@@ -48,3 +47,6 @@ if __name__ == "__main__":
 # 시간복잡도 O(nlogn) (heap push) + O(nlogn) (sort) + O(n) (pop) + O(n) (push) = O(nlogn)
 
 # O(n ** 2)으로도 가능
+# 다만 항상 가장 큰 값 heap이 찾아주고, 이진탐색 bisect_right가 현재 값보다 큰 값 중 가장 작은값 찾아줘서 구현이 쉬움
+
+# heapq를 사용할 필요 없음. i번째까지 왔으면 이미 a[i] > ... > a[n]이므로 a[i - 1]과 a[i]끼리만 비교하면 됌
