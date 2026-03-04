@@ -4,7 +4,6 @@ write = sys.stdout.write
 
 
 num_set = set()
-FULL_SET = set(range(1, 21))
 
 
 def solution(command):
@@ -62,7 +61,7 @@ def toggle(num_set, num):
 
 def all(num_set):
     num_set.clear()
-    num_set.update(FULL_SET)
+    num_set.update(range(1, 21))
 
 
 def empty(num_set):
