@@ -5,14 +5,13 @@ setrecursionlimit(10 ** 8)
 
 def solution(n, table):
     prefix = [0 for i in range(n)]
-    return dfs([], prefix, table, n)
+    return dfs(0, prefix, table, n)
 
 
-def dfs(stack, prefix, table, n):
-    current = len(stack)
+def dfs(current, prefix, table, n):
 
-    if len(stack) == n:
-        return stack
+    if current == n:
+        return []
 
     sign = table[current][current]
     if sign == "+":
@@ -31,12 +30,9 @@ def dfs(stack, prefix, table, n):
             else:
                 prefix[current] = candidate
 
-            stack.append(candidate)
-            result = dfs(stack, prefix, table, n)
+            result = dfs(current + 1, prefix, table, n)
             if result != None:
-                return result
-
-            stack.pop()
+                return [candidate] + result
 
     return None
 
