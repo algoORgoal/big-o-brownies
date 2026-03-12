@@ -1,15 +1,15 @@
 from sys import setrecursionlimit
-
 setrecursionlimit(10 ** 8)
 
 
+prefix = [0 for i in range(11)]
+
+
 def solution(n, table):
-    prefix = [0 for i in range(n)]
-    return dfs(0, prefix, table, n)
+    return dfs(0, table, n)
 
 
-def dfs(current, prefix, table, n):
-
+def dfs(current, table, n):
     if current == n:
         return []
 
@@ -30,7 +30,7 @@ def dfs(current, prefix, table, n):
             else:
                 prefix[current] = candidate
 
-            result = dfs(current + 1, prefix, table, n)
+            result = dfs(current + 1, table, n)
             if result != None:
                 return [candidate] + result
 
@@ -38,9 +38,7 @@ def dfs(current, prefix, table, n):
 
 
 def range_sum(prefix, start, end):
-    if end < 0:
-        return 0
-    if start <= 0:
+    if start == 0:
         return prefix[end]
     return prefix[end] - prefix[start - 1]
 
