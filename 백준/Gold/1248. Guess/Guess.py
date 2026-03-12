@@ -1,3 +1,5 @@
+
+
 def solution(n, table):
     prefix = [0 for i in range(n)]
 
@@ -18,9 +20,17 @@ def dfs(stack, prefix, table, n):
         candidates = range(0, 1)
 
     for candidate in candidates:
-        if all(range_sum(prefix, i, current - 1) + candidate > 0 and table[i][current] == "+"
-               or range_sum(prefix, i, current - 1) + candidate < 0 and table[i][current] == "-"
-               or range_sum(prefix, i, current - 1) + candidate == 0 and table[i][current] == "0" for i in range(0, current)):
+
+        ok = True
+        for i in range(current):
+            sum = candidate + range_sum(prefix, i, current - 1)
+            if not (sum > 0 and table[i][current] == "+"
+                    or sum < 0 and table[i][current] == "-"
+                    or sum == 0 and table[i][current] == "0"):
+                ok = False
+                break
+
+        if ok == True:
             if current > 0:
                 prefix[current] = candidate + prefix[current - 1]
             else:
@@ -30,6 +40,19 @@ def dfs(stack, prefix, table, n):
             if result != None:
                 return result
             stack.pop()
+
+        # if all(range_sum(prefix, i, current - 1) + candidate > 0 and table[i][current] == "+"
+        #        or range_sum(prefix, i, current - 1) + candidate < 0 and table[i][current] == "-"
+        #        or range_sum(prefix, i, current - 1) + candidate == 0 and table[i][current] == "0" for i in range(0, current)):
+        #     if current > 0:
+        #         prefix[current] = candidate + prefix[current - 1]
+        #     else:
+        #         prefix[current] = candidate
+        #     stack.append(candidate)
+        #     result = dfs(stack, prefix, table, n)
+        #     if result != None:
+        #         return result
+        #     stack.pop()
 
     return None
 
@@ -117,3 +140,19 @@ if __name__ == "__main__":
 #   -+-
 #    +-
 #     -
+
+
+# naive 탐색 공간
+# 21 ** 10
+
+# 첫번째 pruning
+# S[i][i]
+# 1..10 / -1 .. 10 / 1
+# worse case scenario: 10 ** 10으로 탐색 공간 축소
+
+# constraint satisfaction problem
+# constraints: sign(sum from a[0] to a[i])
+# domain: [-10, 10]
+# variables: a0, ...,  a9
+
+# 10 ** 10 = 10_000_000_000
