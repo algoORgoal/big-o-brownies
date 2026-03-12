@@ -1,17 +1,13 @@
-from sys import setrecursionlimit
-setrecursionlimit(10 ** 8)
-
-
-prefix = [0 for i in range(11)]
-
-
 def solution(n, table):
-    return dfs(0, table, n)
+    prefix = [0 for i in range(n)]
+
+    return dfs([], prefix, table, n)
 
 
-def dfs(current, table, n):
+def dfs(stack, prefix, table, n):
+    current = len(stack)
     if current == n:
-        return []
+        return stack
 
     sign = table[current][current]
     if sign == "+":
@@ -29,10 +25,11 @@ def dfs(current, table, n):
                 prefix[current] = candidate + prefix[current - 1]
             else:
                 prefix[current] = candidate
-
-            result = dfs(current + 1, table, n)
+            stack.append(candidate)
+            result = dfs(stack, prefix, table, n)
             if result != None:
-                return [candidate] + result
+                return result
+            stack.pop()
 
     return None
 
