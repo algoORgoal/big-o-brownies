@@ -1,11 +1,10 @@
 
 def solution(n, table):
-    prefix = [0 for i in range(n)]
 
-    return dfs([], prefix, table, n)
+    return dfs([], table, n)
 
 
-def dfs(stack, prefix, table, n):
+def dfs(stack, table, n):
     current = len(stack)
     if current == n:
         return stack
@@ -19,48 +18,26 @@ def dfs(stack, prefix, table, n):
         candidates = range(0, 1)
 
     for candidate in candidates:
-
-        ok = True
-        for i in range(current):
-            sum = candidate + prefix[current - 1] - \
-                (0 if i == 0 else prefix[i - 1])
-            if not (sum > 0 and table[i][current] == "+"
-                    or sum < 0 and table[i][current] == "-"
-                    or sum == 0 and table[i][current] == "0"):
-                ok = False
-                break
-
-        if ok == True:
-            if current > 0:
-                prefix[current] = candidate + prefix[current - 1]
-            else:
-                prefix[current] = candidate
+        if is_satisfied(stack, current, candidate, table):
             stack.append(candidate)
-            result = dfs(stack, prefix, table, n)
+            result = dfs(stack, table, n)
             if result != None:
                 return result
             stack.pop()
 
-        # if all(range_sum(prefix, i, current - 1) + candidate > 0 and table[i][current] == "+"
-        #        or range_sum(prefix, i, current - 1) + candidate < 0 and table[i][current] == "-"
-        #        or range_sum(prefix, i, current - 1) + candidate == 0 and table[i][current] == "0" for i in range(0, current)):
-        #     if current > 0:
-        #         prefix[current] = candidate + prefix[current - 1]
-        #     else:
-        #         prefix[current] = candidate
-        #     stack.append(candidate)
-        #     result = dfs(stack, prefix, table, n)
-        #     if result != None:
-        #         return result
-        #     stack.pop()
-
     return None
 
 
-def range_sum(prefix, start, end):
-    if start == 0:
-        return prefix[end]
-    return prefix[end] - prefix[start - 1]
+def is_satisfied(stack, current, candidate, table):
+    sum = candidate
+    for i in range(current-1, -1, -1):
+        sum += stack[i]
+        sign = table[i][current]
+        if not (sum > 0 and sign == "+"
+                or sum < 0 and sign == "-"
+                or sum == 0 and sign == "0"):
+            return False
+    return True
 
 
 if __name__ == "__main__":
@@ -156,3 +133,7 @@ if __name__ == "__main__":
 # variables: a0, ...,  a9
 
 # 10 ** 10 = 10_000_000_000
+
+# prefix를 유지할 필요가 없다.
+# 어차피 누적합을 current - 1 -> 0 방향으로 계산해나가면서 부등식 제약 조건을 만족시키는지 확인할 수 있기 때문이다.
+# prefix를 제거해서, sum_range() 함수를 호출하는 비용 감소
