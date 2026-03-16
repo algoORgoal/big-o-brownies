@@ -17,8 +17,7 @@ def solution(n, k, endurances):
     count = 0
 
     while True:
-        rotate(conveyer_belt)
-
+        conveyer_belt.appendleft(conveyer_belt.pop())
         conveyer_belt[n - 1][1] = False
 
         for i in range(n - 2, -1, -1):
