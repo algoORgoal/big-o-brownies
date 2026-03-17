@@ -1,4 +1,7 @@
+from sys import stdin
 from sys import setrecursionlimit
+
+input = stdin.readline
 
 setrecursionlimit(10 ** 5 + 10)
 
@@ -42,6 +45,8 @@ if __name__ == "__main__":
     answer = solution(n, m, source, destination, edges)
     print(answer)
 
+
+# 100_000개의 노드가 각 2개씩 edge 가지고 있을 경우 완전탐색 => 2 ** 100_000, 불가능
 
 # source부터 destination까지의 경로 중 최소 weight의 최댓값
 
