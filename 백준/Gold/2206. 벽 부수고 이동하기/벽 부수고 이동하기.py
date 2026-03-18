@@ -2,6 +2,8 @@ from sys import stdin
 from collections import deque
 from math import inf
 
+input = stdin.readline
+
 
 def solution(n, m, matrix):
     visited = [[inf for j in range(m)] for i in range(n)]
@@ -47,7 +49,7 @@ def bfs(root, visited, matrix):
 
 if __name__ == "__main__":
     n, m = [int(string) for string in input().split()]
-    matrix = [[int(string) for string in input()] for i in range(n)]
+    matrix = [[int(string) for string in input().strip()] for i in range(n)]
     answer = solution(n, m, matrix)
     print(answer)
 
