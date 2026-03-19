@@ -1,0 +1,61 @@
+
+
+def solution(r, c, matrix):
+    return dfs((0, 0), matrix, set(matrix[0][0])) + 1
+
+
+def dfs(current, matrix, visited):
+    r, c = len(matrix), len(matrix[0])
+    x, y = current
+
+    candidates = (x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)
+
+    max_distance = 0
+
+    for candidate in candidates:
+        candidate_x, candidate_y = candidate
+        if 0 <= candidate_x < r and 0 <= candidate_y < c:
+            if matrix[candidate_x][candidate_y] in visited:
+                continue
+
+            visited.add(matrix[candidate_x][candidate_y])
+            max_distance = max(
+                dfs(candidate, matrix, visited) + 1, max_distance)
+            visited.remove(matrix[candidate_x][candidate_y])
+
+    return max_distance
+
+
+if __name__ == "__main__":
+    r, c = [int(string) for string in input().split()]
+    matrix = [[string for string in input()] for i in range(r)]
+    answer = solution(r, c, matrix)
+    print(answer)
+
+
+# player는 A부터 Z를 한번만 방문 가능
+# 탐색공간은 tree로 표현 가능하며, depth는 26까지만 가능
+# 상, 하, 좌, 우 (반드시 한 방향은 이미 방문) => 3 ** 25 = 1125899906842624
+
+
+# 백트래킹을 통해서, 특정 branch로 갔을 때 얼마나 방문할 수 있는지 최대값을 방문함.
+# 필요한 상태: current, matrix, visited
+
+# depth: 25
+# branch가 생길 확률: 각 방향에 선택한 문자의 개수
+# n가 depth이면, 4 * ( (26 - n) /26)
+
+# 1가 depth이면, 4 * ( (26 - 1) /26)
+# 2가 depth이면, 4 * ( (26 - 2) /26)
+# 3가 depth이면, 4 * ( (26 - 3) /26)
+# 4가 depth이면, 4 * ( (26 - 4) /26)
+# 3가 depth이면, 4 * ( (26 - 5) /26)
+
+# def complexity(n):
+#     if n == 26:
+#         return 1
+#     b = (4 * ((26 - n) / 26))
+#     return 1 + b * complexity(n + 1)
+
+# 49_059_813.42308704
+# 평균 노드 개수 5천만개 => 쌉가능
