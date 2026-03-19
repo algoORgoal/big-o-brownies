@@ -1,12 +1,16 @@
 
 
+def atonum(a):
+    return 2 ** (ord(a) - ord('A'))
+
+
 def solution(r, c, matrix):
-    return dfs((0, 0), matrix, set([matrix[0][0]]), r, c, {}) + 1
+    return dfs((0, 0), matrix, atonum(matrix[0][0]), r, c, {}) + 1
 
 
 def dfs(current, matrix, visited, r, c, table):
-    if (current, tuple(sorted(visited))) in table:
-        return table[current, tuple(sorted(visited))]
+    if (current, visited) in table:
+        return table[current, visited]
 
     x, y = current
 
@@ -17,16 +21,14 @@ def dfs(current, matrix, visited, r, c, table):
     for candidate in candidates:
         candidate_x, candidate_y = candidate
         if 0 <= candidate_x < r and 0 <= candidate_y < c:
-            if matrix[candidate_x][candidate_y] in visited:
+            num = atonum(matrix[candidate_x][candidate_y])
+            if visited & num != 0:
                 continue
-
-            visited.add(matrix[candidate_x][candidate_y])
             max_distance = max(
-                dfs(candidate, matrix, visited, r, c, table) + 1, max_distance)
-            visited.remove(matrix[candidate_x][candidate_y])
+                dfs(candidate, matrix, visited | num, r, c, table) + 1, max_distance)
 
-    table[current, tuple(sorted(visited))] = max_distance
-    return table[current, tuple(sorted(visited))]
+    table[current, visited] = max_distance
+    return table[current, visited]
 
 
 if __name__ == "__main__":
