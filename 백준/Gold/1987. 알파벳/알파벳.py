@@ -1,11 +1,8 @@
-
-
 def solution(r, c, matrix):
-    return dfs((0, 0), matrix, set(matrix[0][0])) + 1
+    return dfs((0, 0), matrix, set([matrix[0][0]]), r, c) + 1
 
 
-def dfs(current, matrix, visited):
-    r, c = len(matrix), len(matrix[0])
+def dfs(current, matrix, visited, r, c):
     x, y = current
 
     candidates = (x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)
@@ -20,7 +17,7 @@ def dfs(current, matrix, visited):
 
             visited.add(matrix[candidate_x][candidate_y])
             max_distance = max(
-                dfs(candidate, matrix, visited) + 1, max_distance)
+                dfs(candidate, matrix, visited, r, c) + 1, max_distance)
             visited.remove(matrix[candidate_x][candidate_y])
 
     return max_distance
@@ -43,15 +40,15 @@ if __name__ == "__main__":
 
 # depth: 25
 # branch가 생길 확률: 각 방향에 선택한 문자의 개수
-# n가 depth이면, 4 * ( (26 - n) /26)
+# n가 depth이면, branch 개수 4 * ( (26 - n) /26)
 
-# 1가 depth이면, 4 * ( (26 - 1) /26)
+# 1가 depth이면, 해당 노드의 branch 개수 4 * ( (26 - 1) /26)
 # 2가 depth이면, 4 * ( (26 - 2) /26)
 # 3가 depth이면, 4 * ( (26 - 3) /26)
 # 4가 depth이면, 4 * ( (26 - 4) /26)
 # 3가 depth이면, 4 * ( (26 - 5) /26)
 
-# def complexity(n):
+# def complexity(n):ㄷ
 #     if n == 26:
 #         return 1
 #     b = (4 * ((26 - n) / 26))
