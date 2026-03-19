@@ -1,8 +1,13 @@
+
+
 def solution(r, c, matrix):
-    return dfs((0, 0), matrix, set([matrix[0][0]]), r, c) + 1
+    return dfs((0, 0), matrix, set([matrix[0][0]]), r, c, {}) + 1
 
 
-def dfs(current, matrix, visited, r, c):
+def dfs(current, matrix, visited, r, c, table):
+    if (current, tuple(sorted(visited))) in table:
+        return table[current, tuple(sorted(visited))]
+
     x, y = current
 
     candidates = (x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)
@@ -17,10 +22,11 @@ def dfs(current, matrix, visited, r, c):
 
             visited.add(matrix[candidate_x][candidate_y])
             max_distance = max(
-                dfs(candidate, matrix, visited, r, c) + 1, max_distance)
+                dfs(candidate, matrix, visited, r, c, table) + 1, max_distance)
             visited.remove(matrix[candidate_x][candidate_y])
 
-    return max_distance
+    table[current, tuple(sorted(visited))] = max_distance
+    return table[current, tuple(sorted(visited))]
 
 
 if __name__ == "__main__":
@@ -56,3 +62,5 @@ if __name__ == "__main__":
 
 # 49_059_813.42308704
 # 평균 노드 개수 5천만개 => 쌉가능
+
+# 다른 방법: 각각의 route가 어떤 알파벳을 방문하는지 확인 => 반환
