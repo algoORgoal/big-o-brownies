@@ -7,11 +7,11 @@ input = stdin.readline
 def solution(n, s, arr):
     start = 0
     end = 0
-    sum = arr[0]
+    sum = 0
     minimal_length = inf
 
-    while True:
-
+    for end in range(n):
+        sum += arr[end]
         while start < end:
             if sum - arr[start] >= s:
                 sum -= arr[start]
@@ -21,12 +21,6 @@ def solution(n, s, arr):
 
         if sum >= s:
             minimal_length = min(minimal_length, end - start + 1)
-
-        if end == n - 1:
-            break
-
-        end += 1
-        sum += arr[end]
 
     return minimal_length if minimal_length != inf else 0
 
@@ -54,3 +48,13 @@ if __name__ == "__main__":
 #     if from start + 1 to end > s:
 #       start += 1
 #   end += 1
+
+
+# 알고리즘은  0 <= end <= n - 1에 대하여 sum(end ~ start) >= s인 최댓값 start를 찾는다.
+# 못찾는다고 해보자.(proof by induction)
+# 1. base case end = 0에 대해서, 최댓값 start_0 찾는다.
+# 2. induction step: end = k까지 최댓값 start_k를 찾았다고 가정
+#    sum(start_k ~ end_k) >= s 이므로 sum(start_k ~ end_k+1) >= s
+#    루프 invaraint에 따라 sum(start_k+1 + 1, end_k+1) < s이므로 start_k+1은 최대한 큰 값을 찾는다.
+
+# 항상 end += 1 or start += 1만 발생하므로 O(n)
