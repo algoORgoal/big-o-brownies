@@ -1,38 +1,37 @@
 from math import inf
-import heapq
+from collections import deque
 
 
 def solution(n, m, ladders, snakes):
     ladder_table = {low: high for low, high in ladders}
     snake_table = {high: low for high, low in snakes}
 
-    return dijkstra(1, {}, ladder_table, snake_table)
+    return bfs(1, {}, ladder_table, snake_table)
 
 
-def dijkstra(root, visited, ladder_table, snake_table):
-    queue = []
-    heapq.heappush(queue, (0, root))
+def bfs(root, visited, ladder_table, snake_table):
+    queue = deque([])
+    queue.appendleft((0, root))
+    visited[root] = 0
 
     while len(queue) > 0:
-        distance, current = heapq.heappop(queue)
+        distance, current = queue.pop()
 
-        if current in visited:
-            continue
-
-        visited[current] = distance
-
-        if current in ladder_table:
-            candidates = [(distance, ladder_table[current])]
-        elif current in snake_table:
-            candidates = [(distance, snake_table[current])]
-        else:
-            candidates = [(distance + 1, current + i) for i in range(1, 7)]
+        candidates = [current + i for i in range(1, 7)]
 
         for candidate in candidates:
-            candidate_distance, candidate_position = candidate
-            if candidate_position > 100:
+            if candidate in ladder_table:
+                candidate = ladder_table[candidate]
+            if candidate in snake_table:
+                candidate = snake_table[candidate]
+
+            if candidate in visited:
                 continue
-            heapq.heappush(queue, candidate)
+            if candidate > 100:
+                continue
+
+            visited[candidate] = distance + 1
+            queue.appendleft((distance + 1, candidate))
 
     return visited[100]
 
@@ -81,5 +80,7 @@ if __name__ == "__main__":
 # 문제점: edge weight가 서로 다를 때는 bfs가 정답을 못 찾는다.
 # dijkstra algorithm을 사용해야 한다.
 # 문제: 다만 사다리나 뱀이 있는 특정 좌표에 이동했을 때, 선택지가 하나로 강제되므로 주사위를 굴려서는 안 된다.
+# 따라서 bfs로도 풀 수 있기는 하다.
+# 주사위 굴리기 + 뱀/사다리 타는 경우
 
 # 시간 복잡도: O(elogv) (e <= v * 7, v <= 100)
