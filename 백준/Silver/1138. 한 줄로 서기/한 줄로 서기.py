@@ -1,4 +1,15 @@
 from itertools import permutations
+from functools import cmp_to_key
+
+
+def comparator(a, b):
+    a_ahead, a_value = a
+    b_ahead, b_value = b
+
+    if ahead != b_ahead:
+        return a_ahead - b_ahead
+    else:
+        return b_value - a_value
 
 
 def factorial(n):
@@ -12,25 +23,22 @@ def factorial(n):
 # print(10 ** 2 * factorial(10))
 
 
-def solution(n, ahead):
-    people = [i for i in range(1, n + 1)]
-    for permutation in permutations(people, n):
-        table = {}
+def solution(n, aheads):
+    line = [0 for i in range(n)]
+    for i, ahead in enumerate(aheads):
+        height = i + 1
 
-        for i in range(len(permutation)):
-            for j in range(i):
-                if permutation[j] > permutation[i]:
-                    if permutation[i] not in table:
-                        table[permutation[i]] = 0
+        zero_count = 0
+        for j in range(n):
+            if line[j] != 0:
+                continue
+            if zero_count == ahead:
+                line[j] = height
+                break
+            else:
+                zero_count += 1
 
-                    table[permutation[i]] += 1
-
-        arr = [table[i] if i in table else 0 for i in range(1, n + 1)]
-
-        if arr == ahead:
-            return permutation
-
-    return n
+    return line
 
 
 if __name__ == "__main__":
@@ -58,3 +66,9 @@ if __name__ == "__main__":
 
 # 362_880_000
 # 3억 => 시간초과
+# pypy로는 통과함
+
+# 해결책 2
+# 빈 공간이 ahead개 나오는 지점에 해당 사람을 넣기
+# 이전에 탐색한 건 모두 해당 사람보다 키가 작고, 빈 공간에 나올 사람은 모두 키가 큼
+# 따라서 만족
