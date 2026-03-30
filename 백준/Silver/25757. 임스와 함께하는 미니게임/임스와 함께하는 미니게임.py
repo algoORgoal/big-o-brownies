@@ -1,3 +1,8 @@
+from sys import stdin
+
+input = stdin.readline
+
+
 def solution(n, type, requests):
     requesting_players = set(requests)
     if type == "Y":
@@ -9,10 +14,10 @@ def solution(n, type, requests):
 
 
 if __name__ == "__main__":
-    tokens = input().split()
+    tokens = input().strip().split()
     n, type = int(tokens[0]), tokens[1]
 
-    requests = [input() for i in range(n)]
+    requests = [input().strip() for i in range(n)]
     answer = solution(n, type, requests)
     print(answer)
 
