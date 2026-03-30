@@ -57,8 +57,11 @@ class LinkedList:
                 self.table.pop(self.tail.data)
                 self.tail = prev
                 
+                
                 if self.head == next:
                     self.head = prev
+                else:
+                    prev.next = None
             
             return 5
             
