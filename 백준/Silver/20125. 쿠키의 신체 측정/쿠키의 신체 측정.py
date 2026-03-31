@@ -1,3 +1,6 @@
+from sys import stdin
+
+input = stdin.readline
 
 
 def solution(n, matrix):
@@ -44,8 +47,8 @@ def calculate_part_length(matrix, start, direction):
 
 
 if __name__ == "__main__":
-    n = int(input())
-    matrix = [[char for char in input()] for i in range(n)]
+    n = int(input().strip())
+    matrix = [[char for char in input().strip()] for i in range(n)]
     answer = solution(n, matrix)
     heart, lengths = answer
 
