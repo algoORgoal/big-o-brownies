@@ -21,28 +21,25 @@ def solution(n, k, history):
             cache.add(item)
             continue
 
+        furthest_access_time = -inf
+        furthest_item = -1
+
         for cache_item in cache:
             next_access_time_index = bisect_right(
                 access_time_table[cache_item], time)
+
             if next_access_time_index >= len(access_time_table[cache_item]):
                 cache.remove(cache_item)
                 replacement_count += 1
                 cache.add(item)
                 break
 
+            next_access_time = access_time_table[cache_item][next_access_time_index]
+            if furthest_access_time < next_access_time:
+                furthest_access_time = next_access_time
+                furthest_item = cache_item
+
         if item not in cache:
-            furthest_access_time = -inf
-            furthest_item = -1
-
-            for cache_item in cache:
-                next_access_time_index = bisect_right(
-                    access_time_table[cache_item], time)
-
-                next_access_time = access_time_table[cache_item][next_access_time_index]
-                if furthest_access_time < next_access_time:
-                    furthest_access_time = next_access_time
-                    furthest_item = cache_item
-
             cache.remove(furthest_item)
             replacement_count += 1
             cache.add(item)
