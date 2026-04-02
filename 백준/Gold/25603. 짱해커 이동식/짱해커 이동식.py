@@ -1,26 +1,57 @@
 import heapq
 from math import inf
+from math import ceil
 from sys import stdin
 
 input = stdin.readline
 
 
 def solution(n, k, requests):
-    queue = []
 
-    maximum = -inf
+    start = 1
+    end = 1_000_000_000
 
-    for index, request in enumerate(requests):
-        heapq.heappush(queue, (request, index))
+    while start < end:
 
-        while len(queue) > 0 and queue[0][1] <= index - k:
-            heapq.heappop(queue)
+        mid = (start + end) // 2
 
-        if len(queue) >= k - 1:
-            maximum = max(maximum, queue[0][0])
+        if can_start(requests, k, mid):
+            end = mid
+        else:
+            start = mid + 1
 
-    return maximum
+    return start
 
+
+def can_start(requests, k, m):
+
+    indices = []
+
+    for i in range(len(requests)):
+        if requests[i] <= m:
+            indices.append(i)
+
+    if len(indices) == 0:
+        return False
+
+    left = indices[0]
+    right = indices[len(indices) - 1]
+
+    if left > k - 1:
+        return False
+
+    if right < len(requests) - 1 - (k - 1):
+        return False
+
+    for i in range(len(indices) - 1):
+        first, second = indices[i], indices[i + 1]
+        if second - first > k:
+            return False
+
+    return True
+
+
+# 0 1 2 3 4
 
 if __name__ == "__main__":
     n, k = [int(string) for string in input().strip().split()]
