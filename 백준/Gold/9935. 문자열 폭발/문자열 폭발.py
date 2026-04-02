@@ -1,7 +1,12 @@
 from sys import stdin
+from sys import stdout
 from collections import deque
 
 input = stdin.readline
+
+
+def print(string, end="\n"):
+    stdout.write(f"{string}{end}")
 
 
 def solution(queue, pattern):
