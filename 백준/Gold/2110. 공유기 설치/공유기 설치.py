@@ -34,7 +34,7 @@ def solution(n, c, positions):
 
 if __name__ == "__main__":
     n, c = [int(string) for string in input().strip().split()]
-    positions = [int(input()) for i in range(n)]
+    positions = [int(input().strip()) for i in range(n)]
     answer = solution(n, c, positions)
     print(answer)
 
