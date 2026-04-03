@@ -3,6 +3,8 @@ from math import inf
 
 def solution(n, rank_list):
     team_rank_table = {}
+
+    # 선수 별 랭크 계산, 팀별로 매핑
     for index, team in enumerate(rank_list):
         rank = index + 1
 
@@ -12,12 +14,14 @@ def solution(n, rank_list):
 
     invalid_teams = set()
 
+    # 유효하지 않은 팀 색출
     for team in team_rank_table:
         if len(team_rank_table[team]) < 6:
             invalid_teams.add(team)
 
     rank_score_table = {}
 
+    # 등수 별 점수 계산
     current_score = 1
     for index, team in enumerate(rank_list):
         rank = index + 1
@@ -28,6 +32,7 @@ def solution(n, rank_list):
             rank_score_table[rank] = current_score
             current_score += 1
 
+    # 우승 기준에 따른 팀별 점수 계산
     valid_team_scores = []
     for team in team_rank_table:
         if team not in invalid_teams:
@@ -38,6 +43,7 @@ def solution(n, rank_list):
             third = rank_score_table[team_rank_table[team][5]]
             valid_team_scores.append((first, second, third, team))
 
+    # 우승 기준에 따른 팀 별 순위 정렬, 우승자 선정
     winner_team_score = sorted(valid_team_scores)[0]
 
     return winner_team_score[3]
