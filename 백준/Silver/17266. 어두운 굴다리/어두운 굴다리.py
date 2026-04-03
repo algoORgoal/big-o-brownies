@@ -1,6 +1,27 @@
 from math import ceil
 
 
+def is_within_range(street_lamps, n, m):
+    first = street_lamps[0]
+    last = street_lamps[len(street_lamps) - 1]
+
+    left_distance = first
+    right_distance = n - last
+
+    if left_distance > m:
+        return False
+    if right_distance > m:
+        return False
+
+    for i in range(len(street_lamps) - 1):
+        first, second = street_lamps[i], street_lamps[i + 1]
+        distance = second - first
+        if distance > 2 * m:
+            return False
+
+    return True
+
+
 def solution(n, m, street_lamps):
     start = 1
     end = 100_000
@@ -8,29 +29,10 @@ def solution(n, m, street_lamps):
     while start < end:
         mid = (start + end) // 2
 
-        is_valid = True
-
-        first = street_lamps[0]
-        last = street_lamps[len(street_lamps) - 1]
-
-        left_distance = first
-        right_distance = n - last
-
-        if left_distance > mid:
-            is_valid = False
-        elif right_distance > mid:
-            is_valid = False
-        else:
-            for i in range(len(street_lamps) - 1):
-                first, second = street_lamps[i], street_lamps[i + 1]
-                distance = second - first
-                if distance > 2 * mid:
-                    is_valid = False
-
-        if is_valid == True:  # 가로등의 높이 h에서 ok => 더 낮춰봐도 됌
+        if is_within_range(street_lamps, n, mid):
             end = mid
         else:
-            start = mid + 1  # 가로등의 높이 h에서 not ok => 더 높여야 됌
+            start = mid + 1
 
     return start
 
