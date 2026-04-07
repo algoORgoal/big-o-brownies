@@ -9,18 +9,18 @@ def solution(n, l, r, matrix):
 
     while True:
         # 각 round마다 방문되는 좌표 모음
-        round_visited = set()
+        visited = [[False for j in range(n)] for i in range(n)]
         for i in range(n):
             for j in range(n):
-                if (i, j) in round_visited:
+                if visited[i][j] == True:
                     continue
 
-                round_visited.add((i, j))
+                visited[i][j] = True
 
                 path = []
 
                 sum, node_count = dfs(
-                    (i, j), matrix, round_visited, l, r, path)
+                    (i, j), matrix, visited, l, r, path)
 
                 average = sum // node_count
 
@@ -53,14 +53,14 @@ def dfs(current, matrix, visited, lower_bound, upper_bound, path):
         candidate_x, candidate_y = candidate
         if not (0 <= candidate_x < n and 0 <= candidate_y < n):
             continue
-        if candidate in visited:
+        if visited[candidate_x][candidate_y] == True:
             continue
         difference = abs(
             matrix[x][y] - matrix[candidate_x][candidate_y])
         if not (lower_bound <= difference <= upper_bound):
             continue
 
-        visited.add(candidate)
+        visited[candidate_x][candidate_y] = True
         partial_sum, partial_node_count = dfs(
             candidate, matrix, visited, lower_bound, upper_bound, path)
 
