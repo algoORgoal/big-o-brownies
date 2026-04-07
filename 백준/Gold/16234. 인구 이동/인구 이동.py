@@ -22,13 +22,13 @@ def solution(n, l, r, matrix):
                 sum, node_count = dfs(
                     (i, j), matrix, round_visited, l, r, path)
 
-                if len(path) > 1:
-                    should_stop = False
-
                 average = sum // node_count
 
                 for x, y in path:
                     matrix[x][y] = average
+
+                if len(path) > 1:
+                    should_stop = False
 
         if should_stop == True:
             break
