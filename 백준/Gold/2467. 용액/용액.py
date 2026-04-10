@@ -11,7 +11,7 @@ def solution(n, sorted_nums):
 
         candidates = []
         # 부호 바꿨을 때, num == nums[index - 1] or num == nums[index + 1] 가능
-
+        # num == nums[index]일 때, index - 1, index + 1까지 봐야 함
         indices = [index - 2, index - 1, index, index + 1, index + 2]
 
         for nearby_index in indices:
