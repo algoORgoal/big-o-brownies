@@ -10,6 +10,8 @@ def solution(n, sorted_nums):
         index = bisect_left(sorted_nums, -num)
 
         candidates = []
+        # 부호 바꿨을 때, num == nums[index - 1] or num == nums[index + 1] 가능
+
         indices = [index - 2, index - 1, index, index + 1, index + 2]
 
         for nearby_index in indices:
