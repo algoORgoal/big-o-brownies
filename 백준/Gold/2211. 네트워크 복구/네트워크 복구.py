@@ -1,4 +1,5 @@
 import heapq
+from math import inf
 
 
 def solution(n, m, edges):
@@ -7,12 +8,12 @@ def solution(n, m, edges):
         graph[vertex1].append((vertex2, weight))
         graph[vertex2].append((vertex1, weight))
 
-    return dijkstra(graph, 1)
+    return dijkstra(graph, 1, n)
 
 
-def dijkstra(graph, source):
+def dijkstra(graph, source, n):
     queue = []
-    visited = set()
+    dists = [inf for i in range(0, n + 1)]
 
     heapq.heappush(queue, (0, source, source))
 
@@ -21,15 +22,19 @@ def dijkstra(graph, source):
     while len(queue) > 0:
         distance, node, parent = heapq.heappop(queue)
 
-        if node in visited:
+        if distance >= dists[node]:
             continue
 
-        visited.add(node)
+        dists[node] = distance
 
         if node != parent:
             edges.append((parent, node))
 
         for adjacent_node, weight in graph[node]:
+            next_distance = distance + weight
+            if next_distance >= dists[adjacent_node]:
+                continue
+
             heapq.heappush(queue, (distance + weight, adjacent_node, node))
 
     return edges
