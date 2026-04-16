@@ -6,7 +6,7 @@ input = stdin.readline
 
 
 def solution(n, m, a, b, c, edges):
-    graph = [[] for _ in range(n+1)]
+    graph = {i: [] for i in range(n+1)}
     weight_set = set()
     for vertex1, vertex2, weight in edges:
         graph[vertex1].append((vertex2, weight))
@@ -39,7 +39,7 @@ def solution(n, m, a, b, c, edges):
 
 def dijkstra(graph, source, destination, max_weight, n, max_cost):
     queue = []
-    costs = [10 ** 15] * (n + 1)
+    costs = [inf] * (n + 1)
     costs[source] = 0
 
     heapq.heappush(queue, (0, source))
@@ -67,7 +67,7 @@ def dijkstra(graph, source, destination, max_weight, n, max_cost):
             costs[adjacent_node] = cost + weight
             heapq.heappush(queue, (cost + weight, adjacent_node))
 
-    return 10 ** 15
+    return inf
 
 
 if __name__ == "__main__":
