@@ -1,5 +1,8 @@
 import heapq
 from math import inf
+from sys import stdin
+
+input = stdin.readline
 
 
 def solution(n, m, edges):
@@ -41,8 +44,9 @@ def dijkstra(graph, source, n):
 
 
 if __name__ == "__main__":
-    n, m = [int(string) for string in input().split()]
-    edges = [[int(string) for string in input().split()] for i in range(m)]
+    n, m = [int(string) for string in input().strip().split()]
+    edges = [[int(string) for string in input().strip().split()]
+             for i in range(m)]
     answer = solution(n, m, edges)
     print(len(answer))
     for row in answer:
