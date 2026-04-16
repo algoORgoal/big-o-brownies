@@ -24,7 +24,7 @@ def solution(n, m, a, b, c, edges):
     while start < end:
         mid = (start + end) // 2
         max_weight = sorted_edge_weights[mid]
-        cost = dijkstra(graph, a, b, max_weight, n, c)
+        cost = dijkstra(graph, a, b, max_weight, n)
 
         if cost <= c:  # [start, mid], 현재 max_weight으로는 cost가 c 이하인 최단경로를 만들 수 있음
             end = mid
@@ -37,7 +37,7 @@ def solution(n, m, a, b, c, edges):
     return sorted_edge_weights[start]
 
 
-def dijkstra(graph, source, destination, max_weight, n, max_cost):
+def dijkstra(graph, source, destination, max_weight, n):
     queue = []
     costs = [inf] * (n + 1)
     costs[source] = 0
@@ -60,8 +60,6 @@ def dijkstra(graph, source, destination, max_weight, n, max_cost):
             next_cost = cost + weight
 
             if next_cost >= costs[adjacent_node]:
-                continue
-            if next_cost > max_cost:
                 continue
 
             costs[adjacent_node] = cost + weight
