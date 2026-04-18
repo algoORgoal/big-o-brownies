@@ -1,7 +1,7 @@
 from sys import stdin
 from sys import setrecursionlimit
 
-setrecursionlimit(1000 * 1001 // 2)
+setrecursionlimit((1000 * 1001) // 2)
 
 input = stdin.readline
 
@@ -9,7 +9,7 @@ input = stdin.readline
 def solution(n: int, nodes: set[str], m: int, edges: list[list[str]]):
     graph = {}
 
-    for parent, child in edges:
+    for child, parent in edges:
         if parent not in graph:
             graph[parent] = []
         graph[parent].append(child)
@@ -21,20 +21,31 @@ def solution(n: int, nodes: set[str], m: int, edges: list[list[str]]):
 
     topo = stack[::-1]
 
-    dp = {node: set() for node in nodes}
+    dp = {node: set() for node in topo}
 
-    end_nodes = set()
-    for node in topo:
-        if node not in graph:
-            end_nodes.add(node)
+    visited = set()
+    for parent in reversed(topo):
+        if parent not in graph:
             continue
 
-        for child in graph[node]:
-            dp[child] -= dp[node]
-            dp[child].add(node)
+        for child in graph[parent]:
+            if child in visited:
+                continue
+            visited.add(child)
+            dp[parent].add(child)
 
-    print(len(end_nodes))
-    print(*sorted(end_nodes))
+    root_nodes = set()
+    for parent in topo:
+        root_nodes.add(parent)
+
+    for parent in topo:
+        if parent not in graph:
+            continue
+        for child in graph[parent]:
+            root_nodes.discard(child)
+
+    print(len(root_nodes))
+    print(*sorted(root_nodes))
 
     for node in sorted(topo):
         print(node, end=" ")
@@ -83,7 +94,7 @@ if __name__ == "__main__":
 #   if current not in graph:
 #     roots.add(current)
 #   for parent in graph[current]
-#     dp[parent] &= dp[current]
+#     dp[parent] -= dp[current]
 #     dp[parent].add(current)
 # print(*sorted(roots)) # 시조들의 이름
 # for node in topo:
@@ -91,5 +102,9 @@ if __name__ == "__main__":
 #   print(len(dp[node]))
 #   print(sorted(dp[node]))
 
+# 시간복잡도: O(nm) => 시간초과
 
-# 500_000_000.0
+# 해결방법: topology를 거꾸로 돌면서 visited 처리. 처음으로 visited될 때만 parent 노드에 추가
+
+# 시간복잡도: O(m)
+# 공간복잡도: O(m + n)
