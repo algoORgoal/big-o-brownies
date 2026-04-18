@@ -34,10 +34,9 @@ def solution(n, nums):
             tails[index] = num
             num_indices[index] = num_index
 
-    if len(graph) == 0:
-        print(1)
-        print(nums[0])
-        return
+    # child - parent 관계가 성립
+    # 모든 노드가 connected되어 있진 않음
+    # tree의 집합으로 볼 수 있음
 
     nodes = set()
     for parent in graph:
@@ -45,46 +44,42 @@ def solution(n, nums):
         for child in graph[parent]:
             nodes.add(child)
 
-    visited = set()
-    stack = []
+    visited = {}
     for node in nodes:
-        if node in visited:
-            continue
-        dfs(node, graph, visited, stack)
+        if node not in visited:
+            dfs(node, graph, visited, 0)
 
-    topo = stack[::-1]
+    # 모든 노드의 child-parent 연결 관계가 없는 경우
+    if len(nodes) == 0:
+        print(1)
+        print(nums[0])
+        return
 
-    dp = {node: 1 for node in nodes}
+    max_node = list(nodes)[0]
+    for node in visited:
+        if visited[node] > visited[max_node]:
+            max_node = node
 
-    max_node = topo[0]
-    for current in topo:
-        if current not in parent_table:
-            continue
-
-        dp[current] = max(dp[current], dp[parent_table[current]] + 1)
-        if dp[max_node] < dp[current]:
-            max_node = current
-
-    path = deque()
+    index_path = deque()
     current = max_node
+
     while current is not None:
-        path.appendleft(current)
+        index_path.appendleft(current)
         current = parent_table.get(current)
 
-    print(dp[max_node])
-    print(*[nums[index] for index in path])
+    print(visited[max_node] + 1)
+    print(*[nums[index] for index in index_path])
 
 
-def dfs(current, graph, visited, stack):
-    visited.add(current)
+def dfs(current, graph, visited, depth):
+    if current in visited:
+        return
+
+    visited[current] = depth
 
     if current in graph:
         for adjacent_node in graph[current]:
-            if adjacent_node in visited:
-                continue
-            dfs(adjacent_node, graph, visited, stack)
-
-    stack.append(current)
+            dfs(adjacent_node, graph, visited, depth + 1)
 
 
 if __name__ == "__main__":
