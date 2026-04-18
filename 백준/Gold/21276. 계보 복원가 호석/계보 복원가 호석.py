@@ -50,7 +50,7 @@ def solution(n: int, nodes: set[str], m: int, edges: list[list[str]]):
     for node in sorted(topo):
         print(node, end=" ")
         print(len(dp[node]), end=" ")
-        print(*dp[node])
+        print(*sorted(dp[node]))
 
 
 def dfs(node, graph, visited, stack):
