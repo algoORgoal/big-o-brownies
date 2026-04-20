@@ -34,15 +34,13 @@ def solution(n, buildings):
         if len(skyline) == 0:
             skyline.append(time)
             skyline.append(-queue[0][0] if len(queue) > 0 else 0)
-        else:
+        elif len(skyline) > 0:
             if len(queue) == 0:
                 skyline.append(time)
                 skyline.append(0)
-            else:
-                latest_height = skyline[-1]
-                if latest_height != -queue[0][0]:
-                    skyline.append(time)
-                    skyline.append(-queue[0][0] if len(queue) > 0 else 0)
+            elif skyline[-1] != -queue[0][0]:
+                skyline.append(time)
+                skyline.append(-queue[0][0] if len(queue) > 0 else 0)
 
     return skyline
 
