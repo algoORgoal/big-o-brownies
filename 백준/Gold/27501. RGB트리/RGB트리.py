@@ -27,18 +27,13 @@ def solution(n, edges, weights):
         2: 'B',
     }
 
-    if max(*result) == result[0]:
-        visit_colored_graph(1, 0, colored_tree, color_table)
-        print(result[0])
-        print(''.join([digit_to_color[color_table[node]] for node in nodes]))
-    elif max(*result) == result[1]:
-        visit_colored_graph(1, 1, colored_tree, color_table)
-        print(result[1])
-        print(''.join([digit_to_color[color_table[node]] for node in nodes]))
-    else:
-        visit_colored_graph(1, 2, colored_tree, color_table)
-        print(result[2])
-        print(''.join([digit_to_color[color_table[node]] for node in nodes]))
+    for color, count in enumerate(result):
+        if count == max(*result):
+            visit_colored_graph(1, color, colored_tree, color_table)
+            print(count)
+            print(''.join([digit_to_color[color_table[node]]
+                  for node in sorted(nodes)]))
+            break
 
 
 def visit_colored_graph(current, color, colored_tree, color_table):
@@ -74,30 +69,19 @@ def dfs(current, tree, weights, colored_graph):
     if current not in tree:
         return result
 
-    if current in tree:
-        for child in tree[current]:
-            child_result = dfs(child, tree, weights, colored_graph)
+    for child in tree[current]:
+        child_result = dfs(child, tree, weights, colored_graph)
 
-            if child_result[1] > child_result[2]:
-                result[0] += child_result[1]
-                colored_graph[current][0].append((child, 1))
-            else:
-                result[0] += child_result[2]
-                colored_graph[current][0].append((child, 2))
+        colors = set([0, 1, 2])
 
-            if child_result[2] > child_result[0]:
-                result[1] += child_result[2]
-                colored_graph[current][1].append((child, 2))
+        for color in colors:
+            different_color1, different_color2 = list(colors - {color})
+            if child_result[different_color1] >= child_result[different_color2]:
+                result[color] += child_result[different_color1]
+                colored_graph[current][color].append((child, different_color1))
             else:
-                result[1] += child_result[0]
-                colored_graph[current][1].append((child, 0))
-
-            if child_result[0] > child_result[1]:
-                result[2] += child_result[0]
-                colored_graph[current][2].append((child, 0))
-            else:
-                result[2] += child_result[1]
-                colored_graph[current][2].append((child, 1))
+                result[color] += child_result[different_color2]
+                colored_graph[current][color].append((child, different_color2))
 
     return result
 
@@ -111,5 +95,5 @@ if __name__ == "__main__":
     solution(n, edges, weights)
 
 
-# 시간복잡도: O(n ** 2)
+# 시간복잡도: O(n)
 # 공간복잡도: O(n)
