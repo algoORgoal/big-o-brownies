@@ -17,7 +17,6 @@ def solution(n, edges, weights):
     create_tree(None, 1, graph, tree, set())
 
     colored_tree = {}
-
     result = dfs(1, tree, weights, colored_tree)
 
     color_table = {}
@@ -62,28 +61,28 @@ def create_tree(parent, current, graph, tree, visited):
             create_tree(current, adjacent_node, graph, tree, visited)
 
 
-def dfs(current, tree, weights, colored_graph):
-    result = weights[current][:]
-    colored_graph[current] = [[], [], []]
+def dfs(current, tree, weights, colored_tree):
+    sums = weights[current][:]
+    colored_tree[current] = [[], [], []]
 
     if current not in tree:
-        return result
+        return sums
 
     for child in tree[current]:
-        child_result = dfs(child, tree, weights, colored_graph)
+        child_result = dfs(child, tree, weights, colored_tree)
 
         colors = set([0, 1, 2])
 
         for color in colors:
             different_color1, different_color2 = list(colors - {color})
             if child_result[different_color1] >= child_result[different_color2]:
-                result[color] += child_result[different_color1]
-                colored_graph[current][color].append((child, different_color1))
+                sums[color] += child_result[different_color1]
+                colored_tree[current][color].append((child, different_color1))
             else:
-                result[color] += child_result[different_color2]
-                colored_graph[current][color].append((child, different_color2))
+                sums[color] += child_result[different_color2]
+                colored_tree[current][color].append((child, different_color2))
 
-    return result
+    return sums
 
 
 if __name__ == "__main__":
