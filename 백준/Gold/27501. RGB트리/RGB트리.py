@@ -16,33 +16,38 @@ def solution(n, edges, weights):
     tree = {}
     create_tree(None, 1, graph, tree, set())
 
-    colored_tree = {}
-    result = dfs(1, tree, weights, colored_tree)
+    dp = {}
+    dfs(1, tree, weights, dp)
 
-    color_table = {}
     digit_to_color = {
         0: 'R',
         1: 'G',
         2: 'B',
     }
 
-    for color, count in enumerate(result):
-        if count == max(*result):
-            visit_colored_graph(1, color, colored_tree, color_table)
-            print(count)
-            print(''.join([digit_to_color[color_table[node]]
+    answer = {}
+    reconstruct(1, -1, tree, dp, answer)
+
+    print(max(*dp[1]))
+    print(''.join([digit_to_color[answer[node]]
                   for node in sorted(nodes)]))
-            break
 
 
-def visit_colored_graph(current, color, colored_tree, color_table):
-    if current not in colored_tree:
-        return
+def reconstruct(current, parent_color, tree, dp, answer):
+    if parent_color == -1:
+        color = max(range(3), key=lambda c: dp[current][c])
+    else:
+        candidates = [c for c in range(3) if c != parent_color]
+        if dp[current][candidates[0]] >= dp[current][candidates[1]]:
+            color = candidates[0]
+        else:
+            color = candidates[1]
 
-    color_table[current] = color
+    answer[current] = color
 
-    for child, child_color in colored_tree[current][color]:
-        visit_colored_graph(child, child_color, colored_tree, color_table)
+    if current in tree:
+        for child in tree[current]:
+            reconstruct(child, color, tree, dp, answer)
 
 
 def create_tree(parent, current, graph, tree, visited):
@@ -61,28 +66,23 @@ def create_tree(parent, current, graph, tree, visited):
             create_tree(current, adjacent_node, graph, tree, visited)
 
 
-def dfs(current, tree, weights, colored_tree):
-    sums = weights[current][:]
-    colored_tree[current] = [[], [], []]
+def dfs(current, tree, weights, dp):
+    dp[current] = weights[current][:]
 
     if current not in tree:
-        return sums
+        return
 
     for child in tree[current]:
-        child_result = dfs(child, tree, weights, colored_tree)
+        dfs(child, tree, weights, dp)
 
         colors = set([0, 1, 2])
 
         for color in colors:
             different_color1, different_color2 = list(colors - {color})
-            if child_result[different_color1] >= child_result[different_color2]:
-                sums[color] += child_result[different_color1]
-                colored_tree[current][color].append((child, different_color1))
+            if dp[child][different_color1] >= dp[child][different_color2]:
+                dp[current][color] += dp[child][different_color1]
             else:
-                sums[color] += child_result[different_color2]
-                colored_tree[current][color].append((child, different_color2))
-
-    return sums
+                dp[current][color] += dp[child][different_color2]
 
 
 if __name__ == "__main__":
