@@ -28,13 +28,6 @@ def solution(n, m, edge_table):
                     dp[child] = weight + dp[node]
                     parent_table[child] = node
 
-    leaves = set()
-    for parent in graph:
-        for child, weight in graph[parent]:
-            leaves.add(child)
-    for parent in graph:
-        leaves.discard(parent)
-
     max_sum = -inf
     max_leaf = -1
 
@@ -133,3 +126,6 @@ if __name__ == "__main__":
 
 # 반례: 동일한 start, end를 가진 edge weight가 존재할 수 있음
 # 해결 방법: max값만 저장
+
+# 반례: leaf가 아니더라도 1로 되돌아갈 수 있음
+# 예를 들어, 문제에서 주어진 예시에 6 -> 1 추가되어도 문제가 없음
