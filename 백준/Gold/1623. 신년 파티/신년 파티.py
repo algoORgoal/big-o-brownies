@@ -3,81 +3,89 @@ from sys import stdin, stdout
 input = stdin.readline
 
 
-def solution(n, weights, parents_input):
-    children = [[] for _ in range(n + 1)]
+def print(string, end="\n"):
+    stdout.write(f"{string}{end}")
+
+
+def solution(n, weights, parents):
+    tree = create_tree(parents, n)
+
+    root = 1
+    dp = [[0, 0] for _ in range(n + 1)]
+    dfs_iterative(root, tree, weights, dp)
+
+    route1 = reconstruct_iterative(root, True, tree, dp)
+    route1.sort()
+    route1.append(-1)
+
+    route2 = reconstruct_iterative(root, False, tree, dp)
+    route2.sort()
+    route2.append(-1)
+
+    print(f"{dp[1][0]} {dp[1][1]}")
+    print(" ".join(str(num) for num in route1))
+    print(" ".join(str(num) for num in route2))
+
+
+def create_tree(parents, n):
+    tree = [[] for _ in range(n + 1)]
+
     for child in range(2, n + 1):
-        parent = parents_input[child - 2]
-        children[parent].append(child)
+        parent = parents[child]
+        tree[parent].append(child)
 
-    # iterative preorder to get traversal order
+    return tree
+
+
+def dfs_iterative(root, tree, weights, dp):
     order = []
-    stack = [1]
+    stack = [root]
+
     while stack:
-        u = stack.pop()
-        order.append(u)
-        # children are already increasing; reverse push to preserve natural order if needed
-        for v in reversed(children[u]):
-            stack.append(v)
+        current = stack.pop()
+        order.append(current)
+        for child in tree[current]:
+            stack.append(child)
 
-    # dp
-    dp0 = [0] * (n + 1)  # selected
-    dp1 = [0] * (n + 1)  # not selected
+    for current in reversed(order):
+        dp[current][0] = weights[current]
+        dp[current][1] = 0
 
-    for u in reversed(order):
-        dp0[u] = weights[u]
-        total1 = 0
-        for v in children[u]:
-            dp0[u] += dp1[v]
-            if dp0[v] >= dp1[v]:
-                total1 += dp0[v]
+        for child in tree[current]:
+            dp[current][0] += dp[child][1]
+            if dp[child][0] >= dp[child][1]:
+                dp[current][1] += dp[child][0]
             else:
-                total1 += dp1[v]
-        dp1[u] = total1
+                dp[current][1] += dp[child][1]
 
-    # reconstruct when root is selected
-    selected_root_in = [False] * (n + 1)
-    selected_root_in[1] = True
-    stack = [(v, True)
-             for v in reversed(children[1])]  # parent_selected = True
+
+def reconstruct_iterative(root, root_selected, tree, dp):
+    route = []
+
+    if root_selected:
+        route.append(root)
+
+    stack = []
+    for child in tree[root]:
+        stack.append((child, root_selected))
+
     while stack:
-        u, parent_selected = stack.pop()
-        take = False
-        if not parent_selected and dp0[u] >= dp1[u]:
-            take = True
-            selected_root_in[u] = True
-        for v in reversed(children[u]):
-            stack.append((v, take))
+        current, parent_selected = stack.pop()
 
-    # reconstruct when root is not selected
-    selected_root_out = [False] * (n + 1)
-    stack = [(v, False)
-             for v in reversed(children[1])]  # parent_selected = False
-    while stack:
-        u, parent_selected = stack.pop()
-        take = False
-        if not parent_selected and dp0[u] >= dp1[u]:
-            take = True
-            selected_root_out[u] = True
-        for v in reversed(children[u]):
-            stack.append((v, take))
+        if not parent_selected and dp[current][0] >= dp[current][1]:
+            selected = True
+            route.append(current)
+        else:
+            selected = False
 
-    line1 = f"{dp0[1]} {dp1[1]}\n"
+        for child in tree[current]:
+            stack.append((child, selected))
 
-    route_in = [str(i) for i in range(1, n + 1) if selected_root_in[i]]
-    route_in.append("-1")
-    line2 = " ".join(route_in) + "\n"
-
-    route_out = [str(i) for i in range(1, n + 1) if selected_root_out[i]]
-    route_out.append("-1")
-    line3 = " ".join(route_out) + "\n"
-
-    stdout.write(line1)
-    stdout.write(line2)
-    stdout.write(line3)
+    return route
 
 
 if __name__ == "__main__":
-    n = int(input())
-    weights = [0] + list(map(int, input().split()))
-    parents_input = list(map(int, input().split()))
-    solution(n, weights, parents_input)
+    n = int(input().strip())
+    weights = [0] + [int(string) for string in input().strip().split()]
+    parents = [0, 0] + [int(string) for string in input().strip().split()]
+    solution(n, weights, parents)
