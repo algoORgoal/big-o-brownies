@@ -37,7 +37,8 @@ def solution(n, weights, parents_input):
     # reconstruct when root is selected
     selected_root_in = [False] * (n + 1)
     selected_root_in[1] = True
-    stack = [(v, True) for v in reversed(children[1])]  # parent_selected = True
+    stack = [(v, True)
+             for v in reversed(children[1])]  # parent_selected = True
     while stack:
         u, parent_selected = stack.pop()
         take = False
@@ -49,7 +50,8 @@ def solution(n, weights, parents_input):
 
     # reconstruct when root is not selected
     selected_root_out = [False] * (n + 1)
-    stack = [(v, False) for v in reversed(children[1])]  # parent_selected = False
+    stack = [(v, False)
+             for v in reversed(children[1])]  # parent_selected = False
     while stack:
         u, parent_selected = stack.pop()
         take = False
