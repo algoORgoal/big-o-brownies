@@ -5,18 +5,19 @@ def solution(land, P, Q):
     
     lowest_height = heights[0]
     
-
-    
     lowest_height_cost = 0
     
     for towers in land:
         for tower in towers:
             lowest_height_cost += Q * (tower - lowest_height)
             
+    
     plus_cost = 0
     minus_cost = lowest_height_cost
     
     min_cost = plus_cost + minus_cost
+    
+    print(min_cost)
     
     for i, height in enumerate(heights):
         if i == 0:
@@ -24,11 +25,54 @@ def solution(land, P, Q):
             
         diff = heights[i] - heights[i - 1]
         
-        plus_cost = plus_cost + P * diff * i # 쌓는데 드는 cost
+        plus_cost = P * diff * i # 쌓는데 드는 cost
         minus_cost = minus_cost - (Q * diff * (len(heights) - i)) # 제거하는데 드는 cost
+        print(plus_cost, minus_cost)
         min_cost = min(min_cost, plus_cost + minus_cost)
     
     return min_cost
+
+    
+    
+    
+    
+    
+    left = 0
+    right = 1_000_000_000
+    
+    while right - left >= 3:
+        mid1 = left + (right - left) // 3
+        mid2 = right - (right - left) // 3
+        
+        if get_cost(land, mid1, P, Q) > get_cost(land, mid2, P, Q):
+            left = mid1
+        else:
+            right = mid2
+            
+    best = left
+    for x in range(left, right + 1):
+        if get_cost(land, x, P, Q) < get_cost(land, best, P, Q):
+            best = x
+    
+    return get_cost(land, best, P, Q)
+        
+
+def get_cost(land, h, p, q):
+    if h not in cost_cache:
+        cost_cache[h] = calculate_cost(land, h, p, q)
+    return cost_cache[h]
+
+def calculate_cost(land, height, p, q):
+    total = 0
+    for towers in land:
+        for tower in towers:
+            if height < tower:
+                total += abs(tower - height) * q
+            elif height > tower:
+                total += abs(tower - height) * p
+    
+    return total
+    
             
 #     sorted_heights = height_frequency
     

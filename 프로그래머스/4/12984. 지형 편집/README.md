@@ -1,6 +1,6 @@
 # [level 4] 지형 편집 - 12984 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12984) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/12984?language=python3) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2026년 06월 13일 21:57:20
+2026년 06월 13일 21:57:38
 
 ### 문제 설명
 
