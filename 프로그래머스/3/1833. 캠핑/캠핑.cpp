@@ -1,92 +1,110 @@
 #include <vector>
-#include <algorithm>
+#include <iostream>
 #include <cmath>
+#include <unordered_map>
+#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
+// 전역 변수를 정의할 경우 함수 내에 초기화 코드를 꼭 작성해주세요.
 int solution(int n, vector<vector<int>> data) {
-    vector<int> x_list;
-    vector<int> y_list;
+    unordered_set<pair<pair<int, int>, pair<int, int>>> visited;
+    unordered_map<int, vector<int>> x_to_y_list;
     
-    // 1. 모든 x좌표와 y좌표를 따로 모읍니다.
-    for (int i = 0; i < n; i++) {
-        x_list.push_back(data[i][0]);
-        y_list.push_back(data[i][1]);
+    for (vector<int> position: data) {
+        auto x = position[0], y = position[1];
+        x_to_y_list[x].push_back(y);
     }
     
-    // 2. 좌표 압축을 위해 정렬하고 중복을 제거합니다.
-    sort(x_list.begin(), x_list.end());
-    sort(y_list.begin(), y_list.end());
-    x_list.erase(unique(x_list.begin(), x_list.end()), x_list.end());
-    y_list.erase(unique(y_list.begin(), y_list.end()), y_list.end());
+    unordered_set<int> x_keys;
+    for (auto [x, y_list]: x_to_y_list) {
+        x_keys.insert(x);
+    }
     
-    // 고유한 x, y 좌표의 개수
-    int max_x = x_list.size();
-    int max_y = y_list.size();
     
-    // 3. 2차원 누적 합 배열 생성 (1-based index를 사용하기 위해 +1 크기로 만듦)
-    // S[i][j]는 (1,1)부터 (i,j)까지의 직사각형 내에 있는 점의 개수입니다.
-    vector<vector<int>> S(max_x + 1, vector<int>(max_y + 1, 0));
-    
-    // 주어진 데이터의 원본 좌표를 압축된 인덱스로 변환하고 배열에 점을 찍습니다.
-    vector<pair<int, int>> points(n);
-    for (int i = 0; i < n; i++) {
-        // lower_bound로 값이 들어갈 인덱스를 찾습니다 (0-based)
-        int comp_x = lower_bound(x_list.begin(), x_list.end(), data[i][0]) - x_list.begin();
-        int comp_y = lower_bound(y_list.begin(), y_list.end(), data[i][1]) - y_list.begin();
+    vector<int> x_key_vector(x_keys.begin(), x_keys.end());
+    x_key_vector.sort(x_key_vector.begin(), x_key_vector.end());
         
-        points[i] = {comp_x, comp_y};
-        S[comp_x + 1][comp_y + 1] = 1; // 누적합을 위해 1-based 인덱스에 저장
-    }
+    int total = 0;
     
-    // 4. 누적 합 계산
-    for (int i = 1; i <= max_x; i++) {
-        for (int j = 1; j <= max_y; j++) {
-            S[i][j] += S[i - 1][j] + S[i][j - 1] - S[i - 1][j - 1];
+    for (int i = 0; i < x_key_vector.size(); i++) {
+        if (i == 0) {
+            continue;
         }
-    }
-    
-    int answer = 0;
-    
-    // 5. 점들을 x좌표 기준으로 정렬 (순차적 탐색을 위함)
-    sort(points.begin(), points.end());
-    
-    // 6. O(N^2)으로 모든 점의 쌍을 검사합니다.
-    for (int i = 0; i < n; i++) {
-        for (int j = i + 1; j < n; j++) {
-            int x1 = points[i].first;
-            int y1 = points[i].second;
-            int x2 = points[j].first;
-            int y2 = points[j].second;
-            
-            // 직사각형의 넓이가 0이면 텐트를 칠 수 없음
-            if (x1 == x2 || y1 == y2) continue;
-            
-            // 두 점이 만드는 직사각형의 '내부 영역' 좌표를 구합니다. (1-based)
-            int min_x = min(x1, x2) + 1;
-            int max_x = max(x1, x2) - 1;
-            int min_y = min(y1, y2) + 1;
-            int max_y = max(y1, y2) - 1;
-            
-            // 두 점이 인접해 있어서 아예 내부에 공간이 없는 경우는 조건을 만족하는 것입니다.
-            if (min_x > max_x || min_y > max_y) {
-                answer++;
-                continue;
-            }
-            
-            // 내부 영역에 쐐기(점)가 몇 개 있는지 2차원 누적 합으로 O(1) 만에 구합니다.
-            // +1은 1-based index 변환 처리용입니다.
-            int count = S[max_x + 1][max_y + 1] 
-                      - S[min_x][max_y + 1] 
-                      - S[max_x + 1][min_y] 
-                      + S[min_x][min_y];
-            
-            // 내부에 점이 하나도 없으면 텐트를 칠 수 있습니다.
-            if (count == 0) {
-                answer++;
+        
+        int last_x = x_key_vector[i - 1];
+        int current_x = x_key_vector[i];
+        
+        for (int last_y: x_to_y_list[last_x]) {
+            for (int current_y: x_to_y_list[current_x]) {
+                visited.insert(
+                    minmax(
+                        pair<int, int>(last_x, last_y),
+                        pair<int, int>(current_x, current_y)
+                    )
+                );
+
+                total += 1;
             }
         }
     }
     
-    return answer;
+    
+    unordered_map<int, vector<int>> y_to_x_list;
+
+    
+    for (vector<int> position: data) {
+        auto x = position[0], y = position[1];
+        y_to_x_list[y].push_back(x);
+    }
+    
+    unordered_set<int> y_keys;
+    for (auto [y, x_list]: y_to_x_list) {
+        y_keys.insert(y);
+    }
+    
+    
+    vector<int> y_key_vector(y_keys.begin(), y_keys.end());
+    y_key_vector.sort(y_key_vector.begin(), y_key_vector.end());
+    
+    for (int i = 0; i < y_key_vector.size(); i++) {
+        if (i == 0) {
+            continue;
+        }
+        
+        int last_y = y_key_vector[i - 1];
+        int current_y = y_key_vector[i];
+        
+        for (int last_x: y_to_x_list[last_y]) {
+            for (int current_x: y_to_x_list[current_y]) {
+                    if (!visited.contains(
+                        minmax(
+                            pair<int, int>(last_x, last_y),
+                            pair<int, int>(current_x, current_y),
+                        )
+                    )) {
+                        total += 1;
+                    }
+                }
+            }
+        }
+    }
+
+    return total;
 }
+
+
+// O(n) 시간 안에 스위핑으로 풀 수 있을 듯
+// 1. x 좌표: y좌표 리스트 형태로 변환
+// 2. x좌표 순으로 정렬하여 순회
+//      count += 이전 x좌표 점의 개수 * 현재 x좌표 점의 개수(경계에 위치하는 경우 허용, 다른 점 포함하면 안 됌)
+// 
+
+// 반례: (1, 1), (2, 3), (3, 2)
+// 1 * 1 + 1 * 1 = 2이지만,
+// (1, 1), (3, 2)로도 가능하다. => y좌표 기준으로도 정렬을 해야 된다.
+// 그리고 x좌표에서, 이미 지나간 쌍인지 확인도 해줘야 된다.
+
+
+// 25_000_000
