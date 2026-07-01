@@ -1,0 +1,26 @@
+# 3세대 대장균의 ID 출력
+# 1. parent_id = null인 것 찾기
+# 2. (1)에서 발견한 것을 부모로 가지는 sql 찾기 
+# 3. (2)에서 발견한 것을 부모로 가지는 sql 찾기
+
+
+
+WITH ROOT AS (
+    SELECT ID
+    FROM ECOLI_DATA
+    WHERE PARENT_ID IS NULL
+),
+CHILDREN AS (
+    SELECT ECOLI_DATA.ID
+    FROM ECOLI_DATA
+    JOIN ROOT
+    ON ROOT.ID = ECOLI_DATA.PARENT_ID
+)
+SELECT ECOLI_DATA.ID
+FROM ECOLI_DATA
+JOIN CHILDREN
+ON CHILDREN.ID = ECOLI_DATA.PARENT_ID
+
+
+
+
