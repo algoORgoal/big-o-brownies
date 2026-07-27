@@ -1,0 +1,44 @@
+-- 코드를 작성해주세요
+
+
+# 1. 월 - 분기 테이블 만들기
+# 2. MONTH(DATE) = QUATER.MONTH로 join한 테이블 생성
+# 3. group by quater로 처리
+
+
+# 1 2 3 => 2
+# 4 5 6 => 2
+# 7 8 9 => 1
+# 10 11 12 => 1
+
+WITH RECURSIVE QUARTER_INFO AS (
+    SELECT 1 AS MONTH, '1Q' AS QUARTER
+    
+    UNION
+    
+    SELECT 
+        QUARTER_INFO.MONTH + 1 AS MONTH,
+        CASE
+            WHEN QUARTER_INFO.MONTH + 1 IN (1, 2, 3) THEN '1Q'
+            WHEN QUARTER_INFO.MONTH + 1 IN (4, 5, 6) THEN '2Q'
+            WHEN QUARTER_INFO.MONTH + 1 IN (7, 8, 9 ) THEN '3Q'
+            ELSE '4Q'
+        END AS QUARTER
+    FROM QUARTER_INFO
+    WHERE MONTH <= 11
+),
+QUARTER_COUNT_INFO AS (
+    SELECT Q.QUARTER, E.ID
+    FROM QUARTER_INFO Q
+    JOIN ECOLI_DATA E
+    ON Q.MONTH = MONTH(E.DIFFERENTIATION_DATE) 
+)
+
+SELECT QUARTER, COUNT(*) AS ECOLI_COUNT
+FROM QUARTER_COUNT_INFO
+GROUP BY QUARTER
+ORDER BY QUARTER ASC;
+
+
+
+# 분기 별 분화된 대장균 개체의 수
