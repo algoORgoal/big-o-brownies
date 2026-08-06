@@ -1,29 +1,26 @@
 from collections import deque
 
+
 def solution(n, computers):
-    visited = set()
     count = 0
-    for i in range(0, n):
-        if i not in visited:
-            visited.add(i)
-            bfs(computers, i, visited)
+    visited = set()
+    for node in range(0, n):
+        if node not in visited:
+            dfs(node, computers, visited)
             count += 1
-
     return count
-
-def bfs(matrix, root, visited):
-    queue = deque([ root ])
+        
     
-    while len(queue) > 0:
-        current = queue.popleft()
-        for node, is_adjacent in enumerate(matrix[current]):
-            if is_adjacent == 0:
-                continue
-            if node in visited:
-                continue
-            visited.add(node)
-            queue.append(node)
-
+    
+def dfs(node, matrix, visited):
+    if node in visited:
+        return
+    
+    visited.add(node)
+    
+    for adjacent_node, has_edge in enumerate(matrix[node]):
+        if has_edge == 1:
+            dfs(adjacent_node, matrix, visited)
     
     
     
