@@ -1,29 +1,34 @@
-from itertools import product
+from collections import deque
 
 def solution(word):
-    
-    alphabet = ["A", "E", "I", "O", "U"]
-    
-    
-    words = []
-    for i in range(1, 6):
-        words +=  [ ''.join(array) for array in list(product(alphabet, repeat=i)) ]
-    words.sort()
-    
-    for index, w in enumerate(words):
-        if word == w:
-            return index + 1
-    
-    
-    return -1
-    
-    
-    
-
-    
+    sorted_word_list = bfs()
+    for i, candidate in enumerate(sorted_word_list):
+        if candidate == word:
+            return i
     
 
 
-
-# 5 ** 1 + ... + 5 ** 5 = 3905
-# 만들 수 있는 상태를 모두 만들고, 정렬한다. 그리고 몇번째 인덱스인지 찾고 + 1를 더한다.
+def bfs():
+    queue = deque()
+    queue.append('')
+    
+    visited = set()
+    
+    while len(queue) > 0:
+        node = queue.popleft()
+        
+        if node in visited:
+            continue
+            
+        visited.add(node)
+        
+        if len(node) < 5:
+            for char in [ 'A' , 'E' , 'I', 'O', 'U' ]:
+                adjacent_node = node + char
+                queue.append(adjacent_node)
+    
+    return sorted(visited)
+        
+        
+    
+    
