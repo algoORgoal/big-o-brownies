@@ -2,20 +2,23 @@ from itertools import product
 
 
 def solution(numbers, target):
-    cases = [ [ number, -number ] for number in numbers ]
+    return dfs(numbers, 0, 0, target)
+
+def dfs(numbers, num_count, total, target):
+    if num_count == len(numbers):
+        if total == target:
+            return 1
+        else:
+            return 0
+        
+    current = numbers[num_count]
+    
+    return dfs(numbers, num_count + 1, total + current, target) + dfs(numbers, num_count + 1, total - current, target)
     
     
-    count = 0
-    for combination in product(*cases):
-        current = 0
-        for num in combination:
-            current += num
-        if current == target:
-            count += 1
-    return count
         
 
 
 # +, -로 모든 상태를 만들 경우 2 ** 20
-# 2 ** n
-# ㄴㅇㄹ
+# 시간복잡도 2 ** n
+# 공간복잡도 2 ** n
