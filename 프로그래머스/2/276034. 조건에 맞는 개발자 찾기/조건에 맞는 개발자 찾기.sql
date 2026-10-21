@@ -1,20 +1,24 @@
 -- 코드를 작성해주세요
 
 
-# 1. skillcodes 테이블에서 이름이 Python이거나 C인 것만 남기기
-# 2. developer에서 (skill_code & code) = 1인 것만 남기기
-# 3. developer의 id, 이메일, 이름, 성 선택하기
-
+# SKILLCODE에서 python과 c# 만 뽑기
+# developers의 skill code에 대해 skillcode의 code와 & 연산했을 때 0보다 큰지 확인하기
+# 0보다 크면 해당 개발자의 ID, 이메일, 이름, 성 조회하기
 
 WITH REQUIRED_SKILLCODES AS (
-    SELECT *
-    FROM SKILLCODES
-    WHERE NAME IN ('C#', 'Python')
+SELECT *
+FROM SKILLCODES
+WHERE NAME IN ('Python', 'C#')
 )
 
-SELECT DISTINCT d.ID, d.EMAIL, d.FIRST_NAME, d.LAST_NAME
-FROM DEVELOPERS d
-JOIN REQUIRED_SKILLCODES r
-ON (d.SKILL_CODE & r.CODE) > 0
-ORDER BY d.ID ASC;
+SELECT D.ID, D.EMAIL, D.FIRST_NAME, D.LAST_NAME 
+FROM DEVELOPERS D
+JOIN REQUIRED_SKILLCODES R
+ON D.SKILL_CODE & R.CODE > 0
+GROUP BY D.ID
+ORDER BY D.ID ASC;
+
+
+
+
 
