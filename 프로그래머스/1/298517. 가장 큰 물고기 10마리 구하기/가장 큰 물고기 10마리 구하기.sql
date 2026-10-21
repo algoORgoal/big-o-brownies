@@ -1,16 +1,15 @@
+-- 코드를 작성해주세요
 
 
-# select id, 길이
-# from fish_info
-# order by ISNULL(length, 0) asc, id asc
-# limit 10
-
-
+WITH BEST_FISH AS (
 SELECT ID, LENGTH
 FROM FISH_INFO
-ORDER BY IFNULL(LENGTH, 0) DESC, ID ASC
-LIMIT 10;
-
-
+WHERE LENGTH IS NOT NULL
+ORDER BY LENGTH DESC
+LIMIT 10
+)
+SELECT ID, LENGTH
+FROM BEST_FISH
+ORDER BY LENGTH DESC, ID ASC;
 
 
