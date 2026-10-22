@@ -1,6 +1,5 @@
-# 테이블에서 희귀도가 LEGEND인 아이템들의 가격의 총합
+-- 코드를 작성해주세요
 
 SELECT SUM(PRICE) AS TOTAL_PRICE
 FROM ITEM_INFO
-WHERE RARITY = 'LEGEND'
-
+WHERE RARITY='LEGEND'
