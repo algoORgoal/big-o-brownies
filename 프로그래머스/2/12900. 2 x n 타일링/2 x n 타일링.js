@@ -1,11 +1,24 @@
 function solution(n) {
-    const dp = Array.from({ length: n + 1 }).map((_) => 0);
-    dp[1] = 1;
-    dp[2] = 2;
+    const dp = [ 0, 0, 0 ];
+    dp[0] = 1;
+    dp[1] = 2;
     
-    for (let i = 3; i <= n; i++) {
-        dp[i] = (dp[i - 1] + dp[i - 2]) % 1_000_000_007
+    if (n === 1) {
+        return dp[0];
     }
     
-    return dp[n];
+    if (n === 2) {
+        return dp[1];
+    }
+    
+    for (let i = 3; i <= n; i++) {
+        dp[2] = (dp[0] + dp[1]) % 1_000_000_007;
+        dp[0] = dp[1];
+        dp[1] = dp[2];
+    }
+    
+    
+    
+    
+    return dp[1] % 1_000_000_007;
 }
