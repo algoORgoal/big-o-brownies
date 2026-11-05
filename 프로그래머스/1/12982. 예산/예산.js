@@ -1,3 +1,6 @@
+// O(nlogn)
+// O(n)
+
 function solution(d, budget) {
     let current = budget;
     let total = 0;
@@ -9,8 +12,6 @@ function solution(d, budget) {
         if (current < cost) {
             break;
         }
-        
-        console.log(current, cost);
                 
         current -= cost;
         total += 1;
